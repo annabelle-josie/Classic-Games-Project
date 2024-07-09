@@ -1,5 +1,12 @@
 # Classic Games Emulator
 
+## How to run
+As this project is dependent on pygame, it should be installed before running
+'''
+pip install pygame
+'''
+Main.py should then be run
+
 ## Aims of Project
 Use pygame to create graphics, and work to recreate basic games.
 Work on game design principles, improve use of Git and Github - especially using meaningful commit messages
