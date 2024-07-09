@@ -1,5 +1,10 @@
 import pygame
 
+#TODO: Add points system
+#TODO: Add way of making new levels
+#TODO: Make compatable for screen size changes (Add gameloop parameter - size either small/large or number)
+#Then replace all width/height values with variables not numbers
+
 def collisionDetection(player_x, player_y, ball_x, ball_y, x_change, y_change, bricks, gameOver):
     top_left = (ball_x - 10, ball_y - 10)
     base_right = (ball_x + 10, ball_y + 10)
