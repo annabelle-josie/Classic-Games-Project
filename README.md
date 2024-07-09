@@ -2,9 +2,9 @@
 
 ## How to run
 As this project is dependent on pygame, it should be installed before running
-'''
+```
 pip install pygame
-'''
+```
 Main.py should then be run
 
 ## Aims of Project
