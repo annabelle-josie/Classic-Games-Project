@@ -9,6 +9,7 @@ def collisionDetection(player_x, player_y, ball_x, ball_y, x_change, y_change, b
         y_change *= -1
     if(base_right[1] > 720):
         gameOver = True
+        #y_change *= -1 #Uncomment for debugging!
     if (top_left[0] < 0 or base_right[0] > 1280):
         x_change *= -1
 
@@ -34,7 +35,12 @@ def collisionDetection(player_x, player_y, ball_x, ball_y, x_change, y_change, b
                     if(base_right[1] > rect_lt[1] and top_left[1] < rect_rb[1]):
                         bricks[line][brick] = ""
                         y_change *= -1
-                        #x_change /= -3
+                        if((base_right[0] - rect_lt[0]) < 10):
+                            x_change =-3
+                        elif((base_right[0] - player_x) > 90):
+                            x_change = 3
+                
+                
 
     return(x_change, y_change, bricks, gameOver)
            
@@ -130,11 +136,11 @@ def gameLoop():
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-                if(not(player_x - 300 * dt < 0)):
-                    player_x -= 300 * dt
+                if(not(player_x - 400 * dt < 0)):
+                    player_x -= 400 * dt
             if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-                if(not(player_x + 300 * dt > screen.get_width()-120)):
-                    player_x += 300 * dt
+                if(not(player_x + 400 * dt > screen.get_width()-120)):
+                    player_x += 400 * dt
 
         # flip() the display to put your work on screen
         pygame.display.flip()
