@@ -1,5 +1,5 @@
 import pygame
-from brick import gameLoop
+from brick import gameLoop as breakout
 
 #TODO: Make game launcher
 #TODO: Add size toggle
@@ -52,13 +52,22 @@ def gameLauncher():
             screen.blit(imp, (0, 0))
 
             main_font = pygame.font.SysFont('Press_Start_2P', 25)
-            text_surface = main_font.render('1. Atari Breakout', False, ("white"))
-            text_rect = text_surface.get_rect()
-            text_rect.move_ip(300,225)
-            screen.blit(text_surface, text_rect)
 
-            if (text_rect.collidepoint(mouse_x, mouse_y)):
-                    current_screen = "welcome"
+
+            breakout_text = main_font.render('1. Atari Breakout', False, ("white"))
+            breakout_text_rect = breakout_text.get_rect()
+            breakout_text_rect.move_ip(300,225)
+            screen.blit(breakout_text, breakout_text_rect)
+
+            tetris_text = main_font.render('2. Tetris', False, ("white"))
+            tetris_text_rect = tetris_text.get_rect()
+            tetris_text_rect.move_ip(300,275)
+            screen.blit(tetris_text, tetris_text_rect)
+
+            if (breakout_text_rect.collidepoint(mouse_x, mouse_y)):
+                breakout()
+            elif(tetris_text_rect.collidepoint(mouse_x, mouse_y)):
+                current_screen = "welcome"
         # flip() the display to put your work on screen
         pygame.display.flip()
 
