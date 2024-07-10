@@ -91,8 +91,8 @@ def gameLoop():
 
         pygame.font.init() # you have to call this at the start, 
                    # if you want to use this module.
-        main_font = pygame.font.SysFont('Engadi-Gentle', 100)
-        instrc_font = pygame.font.SysFont('Engadi-Gentle', 25)
+        main_font = pygame.font.SysFont('Press_Start_2P', 100)
+        instrc_font = pygame.font.SysFont('Press_Start_2P', 25)
         
 
         # fill the screen with a color to wipe away anything from last frame
@@ -102,9 +102,9 @@ def gameLoop():
         if (gameOver):
             screen.fill("white")
             text_surface = main_font.render('Game Over', False, (0, 0, 0))
-            screen.blit(text_surface, (350,275))
+            screen.blit(text_surface, (200,275))
             text_surface = instrc_font.render('Press R to restart', False, (0, 0, 0))
-            screen.blit(text_surface, (500,400))
+            screen.blit(text_surface, (350,400))
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_r]:
