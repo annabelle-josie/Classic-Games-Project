@@ -18,7 +18,7 @@ Work on game design principles, improve use of Git and Github - especially using
 4. High Score per game?
 
 ## Games included in Emulator
-1. Brickout
+1. Breakout
 2. ...
 
 ## Future Games to be added
