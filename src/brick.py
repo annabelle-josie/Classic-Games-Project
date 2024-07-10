@@ -169,9 +169,9 @@ def gameLoop():
 
         if (gameOver):
             screen.fill("white")
-            text_surface = main_font.render('Game Over', False, "white")
+            text_surface = main_font.render('Game Over', False, "black")
             screen.blit(text_surface, (200,275))
-            text_surface = instrc_font.render('Press R to restart', False, "white")
+            text_surface = instrc_font.render('Press R to restart', False, "black")
             screen.blit(text_surface, (350,400))
 
             keys = pygame.key.get_pressed()
@@ -187,6 +187,7 @@ def gameLoop():
                 puck = Puck(screen_width / 2, 500, 3, 7)
                 gameOver = False
                 won = False
+
         elif(won):
             screen.fill("white")
             text_surface = main_font.render('You won!', False, "white")
