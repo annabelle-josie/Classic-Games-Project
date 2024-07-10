@@ -1,9 +1,11 @@
 import pygame
 
-#TODO: Add points system
+#TODO: Add points system including lives (and display for both)
 #TODO: Add way of making new levels
 #TODO: Make compatable for screen size changes (Add gameloop parameter - size either small/large or number)
 #Then replace all width/height values with variables not numbers
+#TODO: Add way of escaping back to main choice page
+#TODO: Potentially add a waiting start button - it starts as soon as loaded atm
 
 class Brick(pygame.sprite.Sprite):
     def __init__(self, x, y):
