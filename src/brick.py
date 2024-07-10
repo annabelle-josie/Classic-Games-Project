@@ -22,6 +22,9 @@ class Brick(pygame.sprite.Sprite):
     
     def get_rect(self):
         return(pygame.Rect(self.position + (100, 50)))
+    
+    def get_x(self):
+        return(self.position[0])
 
 class Puck(pygame.sprite.Sprite):
     def __init__(self, x, y, velocity_x, velocity_y):
@@ -36,16 +39,22 @@ class Puck(pygame.sprite.Sprite):
         pygame.draw.circle(surface, "white", self.position, 20)
         
     def bounce_x(self):
-        self.velocity = (self.velocity[1] * -1, self.velocity[1])
+        self.velocity = (self.velocity[0] * -1, self.velocity[1])
+
+    def vel_left(self):
+        self.velocity = (-3, self.velocity[1])
+    
+    def vel_right(self):
+        self.velocity = (3, self.velocity[1])
     
     def bounce_y(self):
-        self.velocity = (self.velocity[1], self.velocity[1] * -1)
+        self.velocity = (self.velocity[0], self.velocity[1] * -1)
     
     def getPos(self):
         return self.position
     
     def get_rect(self):
-        return(pygame.Rect(self.position + (20, 20)))
+        return(pygame.Rect(self.position[0]-10, self.position[1]-10, 20, 20))
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -56,15 +65,18 @@ class Player(pygame.sprite.Sprite):
         pygame.draw.rect(surface, "white", (self.position[0], self.position[1], 120, 20))
         
     def move_left(self):
-        if(self.position[0]-10 > 0):
+        if(self.position[0] > 0):
             self.position = (self.position[0] - 10, self.position[1])
     
     def move_right(self, screen_width):
-        if(self.position[0]+10 < screen_width):
+        if(self.position[0] < (screen_width-120)):
             self.position = (self.position[0] + 10, self.position[1])
 
     def get_rect(self):
         return(pygame.Rect(self.position + (120, 20)))
+    
+    def get_x(self):
+        return(self.position[0])
 
 
 
@@ -86,13 +98,10 @@ def collisionDetection(puck, player, bricks, gameOver):
     '''If collide with rectangle'''
     if (pygame.Rect.colliderect(puck.get_rect(), player.get_rect())):
             puck.bounce_y()
-            #Uncomment and update this once all else works
-            '''
-            if((base_right[0] - player_x) <40):
-                x_change =-3
-            elif((base_right[0] - player_x) > 80):
-                x_change = 3
-            '''
+            if(((puck.getPos()[0]+10) - player.get_x()) < 40):
+                puck.vel_left()
+            elif((puck.getPos()[0]+10 - player.get_x()) > 80):
+                puck.vel_right()
 
     '''If collide with brick'''
     for line in range (len(bricks)):
@@ -105,12 +114,10 @@ def collisionDetection(puck, player, bricks, gameOver):
                 if(pygame.Rect.colliderect(puck.get_rect(), this_brick.get_rect())):
                     this_brick.setVisible(False)
                     puck.bounce_y()
-                    '''
-                    if((base_right[0] - rect_lt[0]) < 10):
-                        x_change =-3
-                    elif((base_right[0] - player_x) > 90):
-                        x_change = 3
-                    '''
+                    if(((puck.getPos()[0]+10) - this_brick.get_x()) <40):
+                        puck.vel_left()
+                    elif((puck.getPos()[0]+10 - this_brick.get_x()) > 80):
+                        puck.vel_right()
                 
                 
 
