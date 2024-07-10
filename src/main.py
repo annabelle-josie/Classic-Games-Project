@@ -1,9 +1,7 @@
 import pygame
 from brick import gameLoop as breakout
 
-#TODO: Make game launcher
 #TODO: Add size toggle
-#TODO: Make it look nice
 
 def gameLauncher():
     pygame.init()
