@@ -5,55 +5,122 @@ import pygame
 #TODO: Make compatable for screen size changes (Add gameloop parameter - size either small/large or number)
 #Then replace all width/height values with variables not numbers
 
-def collisionDetection(player_x, player_y, ball_x, ball_y, x_change, y_change, bricks, gameOver):
-    top_left = (ball_x - 10, ball_y - 10)
-    base_right = (ball_x + 10, ball_y + 10)
+class Brick(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.position = (x, y)
+        self.visible = True
     
+    def draw(self, surface):
+        pygame.draw.rect(surface, "white", (self.position[0], self.position[1], 100, 50))
+        
+    def setVisible(self, newValue):
+        self.visible = newValue
+
+    def isVisible(self):
+        return(self.visible)
+    
+    def get_rect(self):
+        return(pygame.Rect(self.position + (100, 50)))
+
+class Puck(pygame.sprite.Sprite):
+    def __init__(self, x, y, velocity_x, velocity_y):
+        super().__init__()
+        self.position = (x, y)
+        self.velocity = (velocity_x, velocity_y)
+    
+    def update(self):
+        self.position = (self.position[0] + self.velocity[0], self.position[1] + self.velocity[1])
+    
+    def draw(self, surface):
+        pygame.draw.circle(surface, "white", self.position, 20)
+        
+    def bounce_x(self):
+        self.velocity = (self.velocity[1] * -1, self.velocity[1])
+    
+    def bounce_y(self):
+        self.velocity = (self.velocity[1], self.velocity[1] * -1)
+    
+    def getPos(self):
+        return self.position
+    
+    def get_rect(self):
+        return(pygame.Rect(self.position + (20, 20)))
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.position = (x, y)
+    
+    def draw(self, surface):
+        pygame.draw.rect(surface, "white", (self.position[0], self.position[1], 120, 20))
+        
+    def move_left(self):
+        if(self.position[0]-10 > 0):
+            self.position = (self.position[0] - 10, self.position[1])
+    
+    def move_right(self, screen_width):
+        if(self.position[0]+10 < screen_width):
+            self.position = (self.position[0] + 10, self.position[1])
+
+    def get_rect(self):
+        return(pygame.Rect(self.position + (120, 20)))
+
+
+
+
+
+
+
+def collisionDetection(puck, player, bricks, gameOver):
     '''Bounce off edges'''
-    if (top_left[1] < 0):
-        y_change *= -1
-    if(base_right[1] > 720):
+    if (puck.getPos()[1] - 10 < 0):
+        puck.bounce_y()
+    if(puck.getPos()[1] + 10 > 720):
         gameOver = True
-        #y_change *= -1 #Uncomment for debugging!
-    if (top_left[0] < 0 or base_right[0] > 1280):
-        x_change *= -1
+        #puck.bounce_y() #Uncomment for debugging!
+    if (puck.getPos()[0] - 10 < 0 or puck.getPos()[0] + 10 > 1280):
+        puck.bounce_x()
 
 
     '''If collide with rectangle'''
-    if (base_right[0] > player_x and top_left[0] < (player_x + 120) ):
-        if(base_right[1] > player_y and top_left[1] < player_y+20):
-            y_change *= -1
-
+    if (pygame.Rect.colliderect(puck.get_rect(), player.get_rect())):
+            puck.bounce_y()
+            #Uncomment and update this once all else works
+            '''
             if((base_right[0] - player_x) <40):
                 x_change =-3
             elif((base_right[0] - player_x) > 80):
                 x_change = 3
+            '''
 
     '''If collide with brick'''
     for line in range (len(bricks)):
         for brick in range (len(bricks[line])):
-            if (bricks[line][brick] == "."):
+            this_brick = bricks[line][brick]
+            if (this_brick.isVisible()):
                 rect_lt = (((1280 / 11 +10)*brick + 20),  (55*line + 50))
                 rect_rb = (((1280 / 11 +10)*brick + 20)+100,  (55*line + 50) + 100)
 
-                if (base_right[0] > rect_lt[0] and top_left[0] < rect_rb[0]):
-                    if(base_right[1] > rect_lt[1] and top_left[1] < rect_rb[1]):
-                        bricks[line][brick] = ""
-                        y_change *= -1
-                        if((base_right[0] - rect_lt[0]) < 10):
-                            x_change =-3
-                        elif((base_right[0] - player_x) > 90):
-                            x_change = 3
+                if(pygame.Rect.colliderect(puck.get_rect(), this_brick.get_rect())):
+                    this_brick.setVisible(False)
+                    puck.bounce_y()
+                    '''
+                    if((base_right[0] - rect_lt[0]) < 10):
+                        x_change =-3
+                    elif((base_right[0] - player_x) > 90):
+                        x_change = 3
+                    '''
                 
                 
 
-    return(x_change, y_change, bricks, gameOver)
+    return(gameOver)
            
 def checkWinner(bricks):
     hasWon = True
     for line in range (len(bricks)):
         for brick in range (len(bricks[line])):
-            if (bricks[line][brick] == "."):
+            if ((bricks[line][brick]).isVisible()):
                 hasWon = False
 
     return hasWon
@@ -66,97 +133,81 @@ def gameLoop():
     running = True
     dt = 0
 
-    bricks = [[".", ".", ".", ".", ".", ".", ".", ".", ".", "."],[".", ".", ".", ".", ".", ".", ".", ".", ".", "."],[".", ".", ".", ".", ".", ".", ".", ".", ".", "."]]
-    #bricks = [[".", ".", ".", ".", ".", ".", ".", ".", ".", "."]]
+    screen_width = 1280
+    screen_height = 700
 
+    bricks = []
+    for line in range (3):
+        bricks.append([])
+        for brick in range (10):
+            bricks[line].append(Brick(((screen_width / 11 +10)*brick + 20), (55*line + 100)))
 
-    player_x = screen.get_width() / 2
-    player_y = (screen.get_height() / 12)*10
-
-    ball_x = screen.get_width() / 2
-    ball_y = 500
-
-    x_change = 3
-    y_change = 7
+    player = Player(screen_width / 2, (screen_height / 12)*10)
+    puck = Puck(screen_width / 2, 500, 3, 7)
 
     gameOver = False
     won = False
 
     while running:
-        # poll for events
-        # pygame.QUIT event means the user clicked X to close your window
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-        pygame.font.init() # you have to call this at the start, 
-                   # if you want to use this module.
+        pygame.font.init()
         main_font = pygame.font.SysFont('Press_Start_2P', 100)
         instrc_font = pygame.font.SysFont('Press_Start_2P', 25)
         
-
-        # fill the screen with a color to wipe away anything from last frame
         screen.fill("black")
         won = checkWinner(bricks)
 
         if (gameOver):
             screen.fill("white")
-            text_surface = main_font.render('Game Over', False, (0, 0, 0))
+            text_surface = main_font.render('Game Over', False, "white")
             screen.blit(text_surface, (200,275))
-            text_surface = instrc_font.render('Press R to restart', False, (0, 0, 0))
+            text_surface = instrc_font.render('Press R to restart', False, "white")
             screen.blit(text_surface, (350,400))
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_r]:
                 #Reset
-                bricks = [[".", ".", ".", ".", ".", ".", ".", ".", ".", "."],[".", ".", ".", ".", ".", ".", ".", ".", ".", "."],[".", ".", ".", ".", ".", ".", ".", ".", ".", "."]]
-                player_x = 1280 / 2
-                player_y = (720 / 12)*10
-                ball_x = 1280/ 2
-                ball_y = 500
-                x_change = 3
-                y_change = 10
+                bricks = []
+                for line in range (3):
+                    bricks.append([])
+                    for brick in range (10):
+                        bricks[line].append(Brick(((screen_width / 11 +10)*brick + 20), (55*line + 100)))
+
+                player = Player(screen_width / 2, (screen_height / 12)*10)
+                puck = Puck(screen_width / 2, 500, 3, 7)
                 gameOver = False
                 won = False
         elif(won):
-            screen.fill("pink")
-            text_surface = main_font.render('You won!', False, (0, 0, 0))
+            screen.fill("white")
+            text_surface = main_font.render('You won!', False, "white")
             screen.blit(text_surface, (350,275))
         else:
-
             for line in range (len(bricks)):
                 for brick in range (len(bricks[line])):
-                    if (bricks[line][brick] == "."):
-                        pygame.draw.rect(screen, "white", (((1280 / 11 +10)*brick + 20), (55*line + 100), 100, 50))
+                    if (bricks[line][brick].isVisible()):
+                        bricks[line][brick].draw(screen)
                 
-            x_change, y_change, bricks, gameOver = collisionDetection(player_x, player_y,ball_x, ball_y,x_change, y_change, bricks, gameOver)
+            gameOver = collisionDetection(puck, player, bricks, gameOver)
 
             '''Update ball'''
-            ball_x += x_change
-            ball_y += y_change
-
-            pygame.draw.rect(screen, "white", (player_x, player_y, 120, 20))
-            
-            pygame.draw.circle(screen, "white", (ball_x, ball_y), 20)
+            puck.update()
+            puck.draw(screen)
+            player.draw(screen)
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-                if(not(player_x - 400 * dt < 0)):
-                    player_x -= 400 * dt
+                player.move_left()
             if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-                if(not(player_x + 400 * dt > screen.get_width()-120)):
-                    player_x += 400 * dt
+                player.move_right(screen_width)
 
-        # flip() the display to put your work on screen
         pygame.display.flip()
 
-        # limits FPS to 60
-        # dt is delta time in seconds since last frame, used for framerate-
-        # independent physics.
         dt = clock.tick(60) / 1000
 
     pygame.quit()
 
 if __name__ == '__main__':
     gameLoop()
-    
