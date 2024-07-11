@@ -40,8 +40,10 @@ def gameLauncher():
             screen.blit(imp, (0, 0))
 
             #If "Start" button clicked
-            if ((mouse_x > 450 and mouse_x < 825) and (mouse_y > 425 and mouse_y < 490)):
-                    current_screen = "game_choice"
+            start_rect = pygame.Rect(450, 425, 375, 65)
+            #if ((mouse_x > 450 and mouse_x < 825) and (mouse_y > 425 and mouse_y < 490)):
+            if(start_rect.collidepoint(mouse_x, mouse_y)):
+                current_screen = "game_choice"
         elif(current_screen == "game_choice"):
             # create a surface object, image is drawn on it.
             imp = pygame.image.load("src/images/gameChoice.png").convert()
@@ -63,7 +65,9 @@ def gameLauncher():
             screen.blit(tetris_text, tetris_text_rect)
 
             if (breakout_text_rect.collidepoint(mouse_x, mouse_y)):
-                breakout()
+                escape = False
+                while(not escape):
+                    escape = breakout(1280, 700)
             elif(tetris_text_rect.collidepoint(mouse_x, mouse_y)):
                 current_screen = "welcome"
         # flip() the display to put your work on screen
