@@ -67,7 +67,7 @@ def gameLauncher():
             if (breakout_text_rect.collidepoint(mouse_x, mouse_y)):
                 escape = False
                 while(not escape):
-                    escape = breakout(1280, 700)
+                    escape = breakout()
             elif(tetris_text_rect.collidepoint(mouse_x, mouse_y)):
                 current_screen = "welcome"
         # flip() the display to put your work on screen

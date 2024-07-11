@@ -1,21 +1,16 @@
 import pygame
 
-#TODO: Make compatable for screen size changes (Add gameloop parameter - size either small/large or number)
-#Then replace all width/height values with variables not numbers
-#TODO: Add way of escaping back to main choice page
 #TODO: Potentially add a waiting start button - it starts as soon as loaded atm
-#TODO: Add way of making new levels
+#TODO: Add way of making new levels like Mario
 
 class Brick(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y):
         super().__init__()
         self.position = (x, y)
         self.visible = True
-        self.width = width
-        self.height = height
     
     def draw(self, surface):
-        pygame.draw.rect(surface, "white", (self.position[0], self.position[1], self.width, self.height))
+        pygame.draw.rect(surface, "white", (self.position[0], self.position[1], 100, 50))
         
     def setVisible(self, newValue):
         self.visible = newValue
@@ -24,7 +19,7 @@ class Brick(pygame.sprite.Sprite):
         return(self.visible)
     
     def get_rect(self):
-        return(pygame.Rect(self.position + (self.width, self.height)))
+        return(pygame.Rect(self.position + (100, 50)))
     
     def get_x(self):
         return(self.position[0])
@@ -129,9 +124,10 @@ def checkWinner(bricks):
 
     return hasWon
 
-def gameLoop(width, height):
-    screen_width = width
-    screen_height = height
+def gameLoop():
+    #Variables could one day be used to change the size, but lots depend on them secretly, so will take a while
+    screen_width = 1280
+    screen_height = 700
 
     pygame.init()
     screen = pygame.display.set_mode((screen_width, screen_height))
@@ -250,5 +246,4 @@ def gameLoop(width, height):
     
 
 if __name__ == '__main__':
-    #gameLoop(1280, 700)
-    gameLoop(640, 350)
+    gameLoop()
