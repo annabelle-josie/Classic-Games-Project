@@ -87,7 +87,7 @@ def collisionDetection(puck, player, bricks, gameOver, lives_left, score):
         else:
             lives_left -= 1
             reset_needed = True
-        #puck.bounce_y() #Uncomment for debugging!
+            #puck.bounce_y() #Uncomment for debugging!
     if (puck.getPos()[0] - 10 < 0 or puck.getPos()[0] + 10 > 1280):
         puck.bounce_x()
 
@@ -198,6 +198,7 @@ def gameLoop():
                 puck = Puck(screen_width / 2, 500, 3, 7)
                 gameOver = False
                 won = False
+                lives_left = 3
 
         elif(won):
             screen.fill("white")
@@ -223,7 +224,7 @@ def gameLoop():
                 gameOver = False
                 won = False
                 reset_needed = False
-
+                
             '''Update ball'''
             puck.update()
             puck.draw(screen)

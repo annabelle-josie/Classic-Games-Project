@@ -1,5 +1,6 @@
 import pygame
 from brick import gameLoop as breakout
+from tetris import gameLoop as tetris
 
 #TODO: Add size toggle
 
@@ -16,43 +17,28 @@ def gameLauncher():
         mouse_x = 0 
         mouse_y = 0
 
-        # set the pygame window name
         pygame.display.set_caption('Retro Games')
 
-        # poll for events
-        # pygame.QUIT event means the user clicked X to close your window
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                #print(f'Mouse clicked at {mouse_x}, {mouse_y}')
 
         pygame.font.init()
 
-        
-
         if(current_screen == "welcome"):
-            # create a surface object, image is drawn on it.
             imp = pygame.image.load("src/images/homescreen.png").convert()
-            
-            # Using blit to copy content from one surface to other
             screen.blit(imp, (0, 0))
 
-            #If "Start" button clicked
             start_rect = pygame.Rect(450, 425, 375, 65)
-            #if ((mouse_x > 450 and mouse_x < 825) and (mouse_y > 425 and mouse_y < 490)):
             if(start_rect.collidepoint(mouse_x, mouse_y)):
                 current_screen = "game_choice"
         elif(current_screen == "game_choice"):
-            # create a surface object, image is drawn on it.
             imp = pygame.image.load("src/images/gameChoice.png").convert()
-            
-            # Using blit to copy content from one surface to other
             screen.blit(imp, (0, 0))
 
             main_font = pygame.font.SysFont('Press_Start_2P', 25)
-
 
             breakout_text = main_font.render('1. Atari Breakout', False, ("white"))
             breakout_text_rect = breakout_text.get_rect()
@@ -69,14 +55,15 @@ def gameLauncher():
                 while(not escape):
                     escape = breakout()
             elif(tetris_text_rect.collidepoint(mouse_x, mouse_y)):
-                current_screen = "welcome"
-        # flip() the display to put your work on screen
-        pygame.display.flip()
+                escape = False
+                while(not escape):
+                    escape = tetris()
+                    screen = pygame.display.set_mode((1280,700))
 
-        # limits FPS to 60
-        # dt is delta time in seconds since last frame, used for framerate-
-        # independent physics.
+        pygame.display.flip()
         dt = clock.tick(60) / 1000
+
+        
 
     pygame.quit()
 
