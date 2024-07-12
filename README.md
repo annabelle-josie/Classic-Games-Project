@@ -19,10 +19,9 @@ Work on game design principles, improve use of Git and Github - especially using
 
 ## Games included in Emulator
 1. Breakout
-2. ...
+2. Tetris
 
 ## Future Games to be added
 1. Snake
-2. Tetris
-3. Hangman
-4. Flappy bird
+2. Hangman
+3. Flappy bird
