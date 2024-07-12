@@ -1,4 +1,5 @@
 import pygame
+import random
 
 class Square(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -81,8 +82,8 @@ class S_Shape(Shape):
 class Line_Shape(Shape):
     def __init__(self):
         super().__init__()
-        self.squares = (Square(0,0), Square(0, 20), Square(20,20), Square(20,40))
-        self.rotations = [[(0,0), (0,20), (20,20), (20,40)],[(0,20), (20,0), (20,20), (40,0)]]
+        self.squares = (Square(0,0), Square(0, 20), Square(0,40), Square(0,60))
+        self.rotations = [[(0,0), (0,20), (0,40), (0,60)],[(0,0), (20,0), (40,0), (60,0)]]
         self.current_rot = 0
 
     def rotate(self):
@@ -91,8 +92,8 @@ class Line_Shape(Shape):
 class Z_Shape(Shape):
     def __init__(self):
         super().__init__()
-        self.squares = (Square(0,0), Square(0, 20), Square(20,20), Square(20,40))
-        self.rotations = [[(0,0), (0,20), (20,20), (20,40)],[(0,20), (20,0), (20,20), (40,0)]]
+        self.squares = (Square(20,0), Square(0, 20), Square(20,20), Square(0,40))
+        self.rotations = [[(20,0), (0,20), (20,20), (0,40)],[(0,0), (20,0), (20,20), (40,20)]]
         self.current_rot = 0
 
     def rotate(self):
@@ -101,8 +102,8 @@ class Z_Shape(Shape):
 class Square_Shape(Shape):
     def __init__(self):
         super().__init__()
-        self.squares = (Square(0,0), Square(0, 20), Square(20,20), Square(20,40))
-        self.rotations = [[(0,0), (0,20), (20,20), (20,40)],[(0,20), (20,0), (20,20), (40,0)]]
+        self.squares = (Square(0,0), Square(0, 20), Square(20,0), Square(20,20))
+        self.rotations = [[(0,0), (0,20), (20,0), (20,20)]]
         self.current_rot = 0
 
     def rotate(self):
@@ -111,8 +112,8 @@ class Square_Shape(Shape):
 class L_Shape(Shape):
     def __init__(self):
         super().__init__()
-        self.squares = (Square(0,0), Square(0, 20), Square(20,20), Square(20,40))
-        self.rotations = [[(0,0), (0,20), (20,20), (20,40)],[(0,20), (20,0), (20,20), (40,0)]]
+        self.squares = (Square(0,0), Square(0, 20), Square(0,40), Square(20,40))
+        self.rotations = [[(0,0), (0,20), (0,40), (20,40)],[(0,0), (0,20), (20,0), (40,0)],[(0,0), (20,0), (20,20), (20,40)],[(40,0), (40,20), (20,20), (20,0)]]
         self.current_rot = 0
 
     def rotate(self):
@@ -121,8 +122,8 @@ class L_Shape(Shape):
 class Rev_L_Shape(Shape):
     def __init__(self):
         super().__init__()
-        self.squares = (Square(0,0), Square(0, 20), Square(20,20), Square(20,40))
-        self.rotations = [[(0,0), (0,20), (20,20), (20,40)],[(0,20), (20,0), (20,20), (40,0)]]
+        self.squares = (Square(20,0), Square(20, 20), Square(20,40), Square(0,40))
+        self.rotations = [[(20,0), (20,20), (20,40), (0,40)],[(0,0), (0,20), (20,20), (40,20)],[(0,0), (0,20), (20,0), (40,0)],[(0,0), (20,0), (40,0), (40,20)]]
         self.current_rot = 0
 
     def rotate(self):
@@ -138,7 +139,11 @@ def gameLoop():
     running = True
     escape_to_main = False
     dt = 0
-    current_shape = S_Shape()
+    
+    current_shape = L_Shape()
+    all_set_shapes = []
+    #shape_types = [S_Shape, Line_Shape, Z_Shape, Square_Shape, L_Shape, Rev_L_Shape]
+    shape_types = [L_Shape, Rev_L_Shape]
 
     while running:
         screen.fill("black")
@@ -147,6 +152,10 @@ def gameLoop():
                 running = False
             elif (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE):
                 current_shape.rotate()
+            elif (event.type == pygame.KEYDOWN and event.key == pygame.K_p):
+                all_set_shapes.append(current_shape)
+                rand_num = random.randint(0, len(shape_types)-1)
+                current_shape = shape_types[rand_num]()
         
         keys = pygame.key.get_pressed()
         if keys[pygame.K_m] or keys[pygame.K_ESCAPE]:
@@ -159,10 +168,19 @@ def gameLoop():
             current_shape.drop(-1)
         elif keys[pygame.K_DOWN]:
             current_shape.drop(2)
-
+        
         current_shape.drop(1)
         current_shape.draw(screen)
-        
+        for i in range(len(all_set_shapes)):
+            all_set_shapes[i].draw(screen)
+        # all_set_shapes = []
+        # for i in range(len(all_set_shapes)):
+        #     if(current_shape.colliderect(all_set_shapes[i])):
+        #         current_shape.make_set()
+        #         all_set_shapes.append(current_shape)
+        #         random.randint(1, 5)
+        #         current_shape = all_set_shapes[i]()
+                # Then make a new current_shape
 
         
         
