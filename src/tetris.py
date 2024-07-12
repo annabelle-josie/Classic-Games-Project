@@ -57,7 +57,7 @@ class Shape(pygame.sprite.Sprite):
     
     def rotate(self, rotations):
         position = [0,0]
-        new_rot = (self.current_rot + 1) % 2
+        new_rot = (self.current_rot + 1) % (len(rotations))
         for i in range(len(self.squares)):
             position = list(self.squares[i].get_position())
             position[0] -= rotations[self.current_rot][i][0]
@@ -65,8 +65,9 @@ class Shape(pygame.sprite.Sprite):
             position[0] += rotations[new_rot][i][0]
             position[1] += rotations[new_rot][i][1]
             self.squares[i].set_position(tuple(position))
+            print(rotations[new_rot][i])
             
-        self.current_rot = (self.current_rot + 1) % 2
+        self.current_rot = (self.current_rot + 1) % (len(rotations)) 
 
 #TODO: work out rotations for all others (S is only one with correct rots)
 class S_Shape(Shape):
@@ -112,8 +113,9 @@ class Square_Shape(Shape):
 class L_Shape(Shape):
     def __init__(self):
         super().__init__()
+        print("l")
         self.squares = (Square(0,0), Square(0, 20), Square(0,40), Square(20,40))
-        self.rotations = [[(0,0), (0,20), (0,40), (20,40)],[(0,0), (0,20), (20,0), (40,0)],[(0,0), (20,0), (20,20), (20,40)],[(40,0), (40,20), (20,20), (20,0)]]
+        self.rotations = [[(0,0), (0,20), (0,40), (20,40)],[(0,0), (0,20), (20,0), (40,0)],[(0,0), (20,0), (20,20), (20,40)],[(40,0), (40,20), (20,20), (0,20)]]
         self.current_rot = 0
 
     def rotate(self):
@@ -122,6 +124,7 @@ class L_Shape(Shape):
 class Rev_L_Shape(Shape):
     def __init__(self):
         super().__init__()
+        print("rev l")
         self.squares = (Square(20,0), Square(20, 20), Square(20,40), Square(0,40))
         self.rotations = [[(20,0), (20,20), (20,40), (0,40)],[(0,0), (0,20), (20,20), (40,20)],[(0,0), (0,20), (20,0), (40,0)],[(0,0), (20,0), (40,0), (40,20)]]
         self.current_rot = 0
@@ -143,7 +146,7 @@ def gameLoop():
     current_shape = L_Shape()
     all_set_shapes = []
     #shape_types = [S_Shape, Line_Shape, Z_Shape, Square_Shape, L_Shape, Rev_L_Shape]
-    shape_types = [L_Shape, Rev_L_Shape]
+    shape_types = [Square_Shape, Line_Shape]
 
     while running:
         screen.fill("black")
