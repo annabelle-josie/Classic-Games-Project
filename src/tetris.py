@@ -1,6 +1,12 @@
 import pygame
 import random
 
+#TODO: Add detection for base of game
+#TODO: Empty row when full (so inc detection for full row)
+#TODO: Points system
+#TODO: Top banner for displaying points
+#TODO: Maybe use image for the squares so that bevel is used (depends on which era of tetris aiming for)
+
 class Square(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
