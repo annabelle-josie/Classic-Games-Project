@@ -128,6 +128,7 @@ def gameLoop():
     #Variables could one day be used to change the size, but lots depend on them secretly, so will take a while
     screen_width = 1280
     screen_height = 700
+    pygame.display.set_caption('Breakout')
 
     pygame.init()
     screen = pygame.display.set_mode((screen_width, screen_height))
