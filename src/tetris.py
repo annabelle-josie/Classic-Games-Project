@@ -1,11 +1,11 @@
 import pygame
 import random
 
-#TODO: Add detection for base of game
 #TODO: Empty row when full (so inc detection for full row)
 #TODO: Points system
 #TODO: Top banner for displaying points
 #TODO: Maybe use image for the squares so that bevel is used (depends on which era of tetris aiming for)
+#TODO: Rev_L_Shape rotations are wrong
 
 class Square(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -48,9 +48,15 @@ class Shape(pygame.sprite.Sprite):
         for i in range(len(self.squares)):
             self.squares[i].draw(surface, self.color)
     
-    def drop(self, speed):
+    def drop(self, speed, screen_height):
+        can_drop = True
         for i in range(len(self.squares)):
-            self.squares[i].drop(speed)
+            if (self.squares[i].get_position()[1]+20+speed > screen_height):
+                can_drop = False
+                self.is_set = True
+        for i in range(len(self.squares)):
+            if(can_drop):
+                self.squares[i].drop(speed)
 
     def move_left(self):
         for i in range(len(self.squares)):
@@ -61,7 +67,7 @@ class Shape(pygame.sprite.Sprite):
             self.squares[i].move(20)    
 
     def get_is_set(self):
-        return set
+        return self.is_set
     
     def make_set(self):
         self.is_set = True
@@ -94,7 +100,6 @@ class Shape(pygame.sprite.Sprite):
             
         self.current_rot = (self.current_rot + 1) % (len(rotations)) 
 
-#TODO: work out rotations for all others (S is only one with correct rots)
 class S_Shape(Shape):
     def __init__(self):
         super().__init__("pink")
@@ -185,17 +190,22 @@ def gameLoop():
                     current_shape = shape_types[rand_num]()
                 if(event.key == pygame.K_LEFT):
                     current_shape.move_left()
-                    current_shape.drop(-1)
+                    current_shape.drop(-1, screen_height)
                 elif(event.key == pygame.K_RIGHT):
                     current_shape.move_right()
-                    current_shape.drop(-1)
+                    current_shape.drop(-1, screen_height)
         
         keys = pygame.key.get_pressed()
         if keys[pygame.K_m] or keys[pygame.K_ESCAPE]:
             escape_to_main = True
         if keys[pygame.K_DOWN]:
-            current_shape.drop(4)
+            current_shape.drop(2, screen_height)
         
+        print(current_shape.get_is_set())
+        if(current_shape.get_is_set()):
+            all_set_shapes.append(current_shape)
+            rand_num = random.randint(0, len(shape_types)-1)
+            current_shape = shape_types[rand_num]()
         
         current_shape.draw(screen)
         for i in range(len(all_set_shapes)):
@@ -208,7 +218,7 @@ def gameLoop():
                 rand_num = random.randint(0, len(shape_types)-1)
                 current_shape = shape_types[rand_num]()
 
-        current_shape.drop(2)
+        current_shape.drop(1, screen_height)
         
         pygame.display.flip()
         dt = clock.tick(60) / 1000
