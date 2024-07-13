@@ -1,6 +1,7 @@
 import pygame
 import random
 
+#TODO: Look at old tetris - how many blocks across?
 #TODO: Empty row when full (so inc detection for full row)
 #TODO: Points system
 #TODO: Top banner for displaying points
@@ -201,7 +202,6 @@ def gameLoop():
         if keys[pygame.K_DOWN]:
             current_shape.drop(2, screen_height)
         
-        print(current_shape.get_is_set())
         if(current_shape.get_is_set()):
             all_set_shapes.append(current_shape)
             rand_num = random.randint(0, len(shape_types)-1)
