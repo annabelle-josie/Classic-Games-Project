@@ -15,7 +15,7 @@ class Square(pygame.sprite.Sprite):
         self.set = False #set will decide if it is moving or still
 
     def draw(self, surface, color):
-        pygame.draw.rect(surface, color, (self.position[0], self.position[1], 20, 20))
+        pygame.draw.rect(surface, color, (self.position[0], self.position[1], 40, 40))
     
     def get_position(self):
         return self.position
@@ -33,7 +33,7 @@ class Square(pygame.sprite.Sprite):
         return set
     
     def get_rect(self):
-        return(pygame.Rect(self.position, (20,20)))
+        return(pygame.Rect(self.position, (40,40)))
 
 class Shape(pygame.sprite.Sprite):
     def __init__(self, color):
@@ -41,31 +41,38 @@ class Shape(pygame.sprite.Sprite):
         self.squares = []
         self.color = color
         self.is_set = False #set will decide if it is moving or still
-    
-    # def make_s(self):
-    #     self.squares = (Square(0,0), Square(0, 20), Square(20,20), Square(20,40))
 
     def draw(self, surface):
         for i in range(len(self.squares)):
             self.squares[i].draw(surface, self.color)
     
-    def drop(self, speed, screen_height):
+    def drop(self, speed):
         can_drop = True
         for i in range(len(self.squares)):
-            if (self.squares[i].get_position()[1]+20+speed > screen_height):
+            if (self.squares[i].get_position()[1]+40+speed > 670):
                 can_drop = False
                 self.is_set = True
-        for i in range(len(self.squares)):
-            if(can_drop):
+        if(can_drop):
+            for i in range(len(self.squares)):
                 self.squares[i].drop(speed)
 
     def move_left(self):
+        can_move = True
         for i in range(len(self.squares)):
-            self.squares[i].move(-20)    
+            if (self.squares[i].get_position()[0]-40 < 440):
+                can_move = False
+        if(can_move):
+            for i in range(len(self.squares)):
+                self.squares[i].move(-40)
 
     def move_right(self):
+        can_move = True
         for i in range(len(self.squares)):
-            self.squares[i].move(20)    
+            if (self.squares[i].get_position()[0]+80 > 840):
+                can_move = False
+        if(can_move):
+            for i in range(len(self.squares)):
+                self.squares[i].move(40)    
 
     def get_is_set(self):
         return self.is_set
@@ -104,8 +111,8 @@ class Shape(pygame.sprite.Sprite):
 class S_Shape(Shape):
     def __init__(self):
         super().__init__("pink")
-        self.squares = (Square(0,0), Square(0, 20), Square(20,20), Square(20,40))
-        self.rotations = [[(0,0), (0,20), (20,20), (20,40)],[(0,20), (20,0), (20,20), (40,0)]]
+        self.squares = (Square(440,30), Square(440, 70), Square(480,70), Square(480,110))
+        self.rotations = [[(0,0), (0,40), (40,40), (40,80)],[(0,40), (40,0), (40,40), (80,0)]]
         self.current_rot = 0
 
     def rotate(self):
@@ -114,8 +121,8 @@ class S_Shape(Shape):
 class Line_Shape(Shape):
     def __init__(self):
         super().__init__("blue")
-        self.squares = (Square(0,0), Square(0, 20), Square(0,40), Square(0,60))
-        self.rotations = [[(0,0), (0,20), (0,40), (0,60)],[(0,0), (20,0), (40,0), (60,0)]]
+        self.squares = (Square(440,30), Square(440, 70), Square(440,110), Square(440,150))
+        self.rotations = [[(0,0), (0,40), (0,80), (0,120)],[(0,0), (40,0), (80,0), (120,0)]]
         self.current_rot = 0
 
     def rotate(self):
@@ -124,8 +131,8 @@ class Line_Shape(Shape):
 class Z_Shape(Shape):
     def __init__(self):
         super().__init__("white")
-        self.squares = (Square(20,0), Square(0, 20), Square(20,20), Square(0,40))
-        self.rotations = [[(20,0), (0,20), (20,20), (0,40)],[(0,0), (20,0), (20,20), (40,20)]]
+        self.squares = (Square(480,30), Square(440, 70), Square(480,70), Square(440,110))
+        self.rotations = [[(40,0), (0,40), (40,40), (0,80)],[(0,0), (40,0), (40,40), (80,40)]]
         self.current_rot = 0
 
     def rotate(self):
@@ -134,8 +141,8 @@ class Z_Shape(Shape):
 class Square_Shape(Shape):
     def __init__(self):
         super().__init__("red")
-        self.squares = (Square(0,0), Square(0, 20), Square(20,0), Square(20,20))
-        self.rotations = [[(0,0), (0,20), (20,0), (20,20)]]
+        self.squares = (Square(440,30), Square(440, 70), Square(480,30), Square(480,70))
+        self.rotations = [[(0,0), (0,40), (40,0), (40,40)]]
         self.current_rot = 0
 
     def rotate(self):
@@ -144,8 +151,8 @@ class Square_Shape(Shape):
 class L_Shape(Shape):
     def __init__(self):
         super().__init__("yellow")
-        self.squares = (Square(0,0), Square(0, 20), Square(0,40), Square(20,40))
-        self.rotations = [[(0,0), (0,20), (0,40), (20,40)],[(0,0), (0,20), (20,0), (40,0)],[(0,0), (20,0), (20,20), (20,40)],[(40,0), (40,20), (20,20), (0,20)]]
+        self.squares = (Square(440,30), Square(440, 70), Square(440,110), Square(480,110))
+        self.rotations = [[(0,0), (0,40), (0,80), (40,80)],[(0,0), (0,40), (40,0), (80,0)],[(0,0), (40,0), (40,40), (40,80)],[(80,0), (80,40), (40,40), (0,40)]]
         self.current_rot = 0
 
     def rotate(self):
@@ -154,16 +161,16 @@ class L_Shape(Shape):
 class Rev_L_Shape(Shape):
     def __init__(self):
         super().__init__("orange")
-        self.squares = (Square(20,0), Square(20, 20), Square(20,40), Square(0,40))
-        self.rotations = [[(20,0), (20,20), (20,40), (0,40)],[(0,0), (0,20), (20,20), (40,20)],[(0,0), (0,20), (20,0), (40,0)],[(0,0), (20,0), (40,0), (40,20)]]
+        self.squares = (Square(480,30), Square(480, 70), Square(480,110), Square(440,110))
+        self.rotations = [[(40,0), (40,40), (40,80), (0,80)],[(0,0), (0,40), (40,40), (80,40)],[(0,0), (0,40), (40,0), (80,0)],[(0,0), (40,0), (80,0), (80,40)]]
         self.current_rot = 0
 
     def rotate(self):
         super().rotate(self.rotations)
 
 def gameLoop():
-    screen_width = 350
-    screen_height = 500
+    screen_width = 1280
+    screen_height = 700
     pygame.display.set_caption('Tetris')
     mini = 1 #0.5 if mini
     pygame.init()
@@ -173,12 +180,14 @@ def gameLoop():
     escape_to_main = False
     dt = 0
     
-    current_shape = L_Shape()
+    current_shape = Line_Shape()
     all_set_shapes = []
     shape_types = [S_Shape, Line_Shape, Z_Shape, Square_Shape, L_Shape, Rev_L_Shape]
 
     while running:
         screen.fill("black")
+        background_images = pygame.image.load("src/images/tetis_background.png").convert()
+        screen.blit(background_images, (0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -191,16 +200,16 @@ def gameLoop():
                     current_shape = shape_types[rand_num]()
                 if(event.key == pygame.K_LEFT):
                     current_shape.move_left()
-                    current_shape.drop(-1, screen_height)
+                    current_shape.drop(-1)
                 elif(event.key == pygame.K_RIGHT):
                     current_shape.move_right()
-                    current_shape.drop(-1, screen_height)
+                    current_shape.drop(-1)
         
         keys = pygame.key.get_pressed()
         if keys[pygame.K_m] or keys[pygame.K_ESCAPE]:
             escape_to_main = True
         if keys[pygame.K_DOWN]:
-            current_shape.drop(2, screen_height)
+            current_shape.drop(2)
         
         if(current_shape.get_is_set()):
             all_set_shapes.append(current_shape)
@@ -218,7 +227,7 @@ def gameLoop():
                 rand_num = random.randint(0, len(shape_types)-1)
                 current_shape = shape_types[rand_num]()
 
-        current_shape.drop(1, screen_height)
+        current_shape.drop(1)
         
         pygame.display.flip()
         dt = clock.tick(60) / 1000
