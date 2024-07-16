@@ -4,9 +4,7 @@ import random
 #TODO: Look at old tetris - how many blocks across?
 #TODO: Empty row when full (so inc detection for full row)
 #TODO: Points system
-#TODO: Top banner for displaying points
-#TODO: Maybe use image for the squares so that bevel is used (depends on which era of tetris aiming for)
-#TODO: Rev_L_Shape rotations are wrong
+#TODO: Missing the weird shaped one!
 
 class Square(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -15,7 +13,7 @@ class Square(pygame.sprite.Sprite):
         self.set = False #set will decide if it is moving or still
 
     def draw(self, surface, color):
-        pygame.draw.rect(surface, color, (self.position[0], self.position[1], 40, 40))
+        pygame.draw.rect(surface, color, (self.position[0], self.position[1], 40, 40), 5)
     
     def get_position(self):
         return self.position
@@ -186,7 +184,7 @@ def gameLoop():
 
     while running:
         screen.fill("black")
-        background_images = pygame.image.load("src/images/tetis_background.png").convert()
+        background_images = pygame.image.load("src/images/tetris_background.png").convert()
         screen.blit(background_images, (0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

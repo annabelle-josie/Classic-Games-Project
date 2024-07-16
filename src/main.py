@@ -35,7 +35,7 @@ def gameLauncher():
             if(start_rect.collidepoint(mouse_x, mouse_y)):
                 current_screen = "game_choice"
         elif(current_screen == "game_choice"):
-            imp = pygame.image.load("src/images/gameChoice.png").convert()
+            imp = pygame.image.load("src/images/game_choice.png").convert()
             screen.blit(imp, (0, 0))
 
             main_font = pygame.font.SysFont('Press_Start_2P', 25)
