@@ -108,7 +108,7 @@ class Shape(pygame.sprite.Sprite):
 
 class S_Shape(Shape):
     def __init__(self):
-        super().__init__("pink")
+        super().__init__("#00ff00")
         self.squares = (Square(440,30), Square(440, 70), Square(480,70), Square(480,110))
         self.rotations = [[(0,0), (0,40), (40,40), (40,80)],[(0,40), (40,0), (40,40), (80,0)]]
         self.current_rot = 0
@@ -118,7 +118,7 @@ class S_Shape(Shape):
 
 class Line_Shape(Shape):
     def __init__(self):
-        super().__init__("blue")
+        super().__init__("#00ffff")
         self.squares = (Square(440,30), Square(440, 70), Square(440,110), Square(440,150))
         self.rotations = [[(0,0), (0,40), (0,80), (0,120)],[(0,0), (40,0), (80,0), (120,0)]]
         self.current_rot = 0
@@ -128,7 +128,7 @@ class Line_Shape(Shape):
 
 class Z_Shape(Shape):
     def __init__(self):
-        super().__init__("white")
+        super().__init__("#ff0000")
         self.squares = (Square(480,30), Square(440, 70), Square(480,70), Square(440,110))
         self.rotations = [[(40,0), (0,40), (40,40), (0,80)],[(0,0), (40,0), (40,40), (80,40)]]
         self.current_rot = 0
@@ -138,7 +138,7 @@ class Z_Shape(Shape):
 
 class Square_Shape(Shape):
     def __init__(self):
-        super().__init__("red")
+        super().__init__("#ffff00")
         self.squares = (Square(440,30), Square(440, 70), Square(480,30), Square(480,70))
         self.rotations = [[(0,0), (0,40), (40,0), (40,40)]]
         self.current_rot = 0
@@ -148,7 +148,7 @@ class Square_Shape(Shape):
 
 class L_Shape(Shape):
     def __init__(self):
-        super().__init__("yellow")
+        super().__init__("#ff7f00")
         self.squares = (Square(440,30), Square(440, 70), Square(440,110), Square(480,110))
         self.rotations = [[(0,0), (0,40), (0,80), (40,80)],[(0,0), (0,40), (40,0), (80,0)],[(0,0), (40,0), (40,40), (40,80)],[(80,0), (80,40), (40,40), (0,40)]]
         self.current_rot = 0
@@ -158,7 +158,7 @@ class L_Shape(Shape):
 
 class Rev_L_Shape(Shape):
     def __init__(self):
-        super().__init__("orange")
+        super().__init__("#0000ff")
         self.squares = (Square(480,30), Square(480, 70), Square(480,110), Square(440,110))
         self.rotations = [[(40,0), (40,40), (40,80), (0,80)],[(0,0), (0,40), (40,40), (80,40)],[(0,0), (0,40), (40,0), (80,0)],[(0,0), (40,0), (80,0), (80,40)]]
         self.current_rot = 0
