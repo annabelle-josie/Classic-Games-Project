@@ -1,19 +1,19 @@
 import pygame
 import random
 
-#TODO: Look at old tetris - how many blocks across?
-#TODO: Empty row when full (so inc detection for full row)
 #TODO: Points system
+#TODO: Win/lose
 #TODO: Missing the weird shaped one!
 
 class Square(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, color):
         super().__init__()
         self.position = (x, y)
+        self.color = color
         self.set = False #set will decide if it is moving or still
 
-    def draw(self, surface, color):
-        pygame.draw.rect(surface, color, (self.position[0], self.position[1], 40, 40), 5)
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, (self.position[0], self.position[1], 40, 40), 5)
     
     def get_position(self):
         return self.position
@@ -32,17 +32,19 @@ class Square(pygame.sprite.Sprite):
     
     def get_rect(self):
         return(pygame.Rect(self.position, (40,40)))
+    
+    def lower(self):
+        self.position = (self.position[0], self.position[1]+40)
 
 class Shape(pygame.sprite.Sprite):
-    def __init__(self, color):
+    def __init__(self):
         super().__init__()
         self.squares = []
-        self.color = color
-        self.is_set = False #set will decide if it is moving or still
+        self.is_set = False
 
     def draw(self, surface):
         for i in range(len(self.squares)):
-            self.squares[i].draw(surface, self.color)
+            self.squares[i].draw(surface)
     
     def drop(self, speed):
         can_drop = True
@@ -78,20 +80,19 @@ class Shape(pygame.sprite.Sprite):
     def make_set(self):
         self.is_set = True
     
-    def doesCollide(self, list_of_rects):
+    def doesCollide(self, given_rect):
         collides = False
         for i in range(len(self.squares)):
-            for j in range(len(list_of_rects)):
-                this_rect = self.squares[i].get_rect()
-                if(this_rect.colliderect(list_of_rects[j])):
-                    collides = True
+            this_rect = self.squares[i].get_rect()
+            if(this_rect.colliderect(given_rect)):
+                collides = True
         return collides
     
-    def get_rects(self):
-        rect_list = []
-        for i in range(len(self.squares)):
-            rect_list.append(self.squares[i].get_rect())
-        return rect_list
+    def get_squares(self):
+        returnVal = []
+        for i in range (len(self.squares)):
+            returnVal.append(self.squares[i])
+        return returnVal
     
     def rotate(self, rotations):
         position = [0,0]
@@ -108,8 +109,8 @@ class Shape(pygame.sprite.Sprite):
 
 class S_Shape(Shape):
     def __init__(self):
-        super().__init__("#00ff00")
-        self.squares = (Square(440,30), Square(440, 70), Square(480,70), Square(480,110))
+        super().__init__()
+        self.squares = (Square(440,30, "#00ff00"), Square(440, 70, "#00ff00"), Square(480,70, "#00ff00"), Square(480,110, "#00ff00"))
         self.rotations = [[(0,0), (0,40), (40,40), (40,80)],[(0,40), (40,0), (40,40), (80,0)]]
         self.current_rot = 0
 
@@ -118,8 +119,8 @@ class S_Shape(Shape):
 
 class Line_Shape(Shape):
     def __init__(self):
-        super().__init__("#00ffff")
-        self.squares = (Square(440,30), Square(440, 70), Square(440,110), Square(440,150))
+        super().__init__()
+        self.squares = (Square(440,30, "#00ffff"), Square(440, 70, "#00ffff"), Square(440,110, "#00ffff"), Square(440,150, "#00ffff"))
         self.rotations = [[(0,0), (0,40), (0,80), (0,120)],[(0,0), (40,0), (80,0), (120,0)]]
         self.current_rot = 0
 
@@ -128,8 +129,8 @@ class Line_Shape(Shape):
 
 class Z_Shape(Shape):
     def __init__(self):
-        super().__init__("#ff0000")
-        self.squares = (Square(480,30), Square(440, 70), Square(480,70), Square(440,110))
+        super().__init__()
+        self.squares = (Square(480,30, "#ff0000"), Square(440, 70, "#ff0000"), Square(480,70, "#ff0000"), Square(440,110, "#ff0000"))
         self.rotations = [[(40,0), (0,40), (40,40), (0,80)],[(0,0), (40,0), (40,40), (80,40)]]
         self.current_rot = 0
 
@@ -138,8 +139,8 @@ class Z_Shape(Shape):
 
 class Square_Shape(Shape):
     def __init__(self):
-        super().__init__("#ffff00")
-        self.squares = (Square(440,30), Square(440, 70), Square(480,30), Square(480,70))
+        super().__init__()
+        self.squares = (Square(440,30, "#ffff00"), Square(440, 70, "#ffff00"), Square(480,30, "#ffff00"), Square(480,70, "#ffff00"))
         self.rotations = [[(0,0), (0,40), (40,0), (40,40)]]
         self.current_rot = 0
 
@@ -148,8 +149,8 @@ class Square_Shape(Shape):
 
 class L_Shape(Shape):
     def __init__(self):
-        super().__init__("#ff7f00")
-        self.squares = (Square(440,30), Square(440, 70), Square(440,110), Square(480,110))
+        super().__init__()
+        self.squares = (Square(440,30, "#ff7f00"), Square(440, 70, "#ff7f00"), Square(440,110, "#ff7f00"), Square(480,110, "#ff7f00"))
         self.rotations = [[(0,0), (0,40), (0,80), (40,80)],[(0,0), (0,40), (40,0), (80,0)],[(0,0), (40,0), (40,40), (40,80)],[(80,0), (80,40), (40,40), (0,40)]]
         self.current_rot = 0
 
@@ -158,29 +159,47 @@ class L_Shape(Shape):
 
 class Rev_L_Shape(Shape):
     def __init__(self):
-        super().__init__("#0000ff")
-        self.squares = (Square(480,30), Square(480, 70), Square(480,110), Square(440,110))
+        super().__init__()
+        self.squares = (Square(480,30, "#0000ff"), Square(480, 70, "#0000ff"), Square(480,110, "#0000ff"), Square(440,110, "#0000ff"))
         self.rotations = [[(40,0), (40,40), (40,80), (0,80)],[(0,0), (0,40), (40,40), (80,40)],[(0,0), (0,40), (40,0), (80,0)],[(0,0), (40,0), (80,0), (80,40)]]
         self.current_rot = 0
 
     def rotate(self):
         super().rotate(self.rotations)
 
+def checkrow(row_num, set_squares):
+    # 440,30 is top left corner, squares are 40x40
+    row_height = (40 * row_num) + 30
+    squares_on_row = []
+    for i in range(len(set_squares)):
+        if(set_squares[i].get_rect().y - row_height < 20 and set_squares[i].get_rect().y - row_height > -20):
+            squares_on_row.append(set_squares[i])
+    if(len(squares_on_row) == 10):
+        print("delete row")
+        return True, squares_on_row
+    else:
+        return False, []
+
 def gameLoop():
     screen_width = 1280
     screen_height = 700
     pygame.display.set_caption('Tetris')
-    mini = 1 #0.5 if mini
     pygame.init()
-    screen = pygame.display.set_mode((screen_width * mini, screen_height * mini))
+    screen = pygame.display.set_mode((screen_width, screen_height))
     clock = pygame.time.Clock()
     running = True
     escape_to_main = False
     dt = 0
     
     current_shape = Line_Shape()
-    all_set_shapes = []
+    all_set_squares = []
     shape_types = [S_Shape, Line_Shape, Z_Shape, Square_Shape, L_Shape, Rev_L_Shape]
+    # filled = [[0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], 
+    # [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0],
+    # [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], 
+    # [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], 
+    # [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], 
+    # [0,0,0,0,0,0,0,0,0,0]]
 
     while running:
         screen.fill("black")
@@ -192,10 +211,6 @@ def gameLoop():
             elif (event.type == pygame.KEYDOWN):
                 if(event.key == pygame.K_SPACE):
                     current_shape.rotate()
-                if(event.key == pygame.K_p):
-                    all_set_shapes.append(current_shape)
-                    rand_num = random.randint(0, len(shape_types)-1)
-                    current_shape = shape_types[rand_num]()
                 if(event.key == pygame.K_LEFT):
                     current_shape.move_left()
                     current_shape.drop(-1)
@@ -210,20 +225,35 @@ def gameLoop():
             current_shape.drop(2)
         
         if(current_shape.get_is_set()):
-            all_set_shapes.append(current_shape)
+            squareList = current_shape.get_squares()
+            for i in range (len(squareList)):
+                all_set_squares.append(squareList[i])
             rand_num = random.randint(0, len(shape_types)-1)
             current_shape = shape_types[rand_num]()
         
-        current_shape.draw(screen)
-        for i in range(len(all_set_shapes)):
-            all_set_shapes[i].draw(screen)
-        
-        for i in range(len(all_set_shapes)):
-            if(current_shape.doesCollide(all_set_shapes[i].get_rects())):
+        for i in range(len(all_set_squares)):
+            if(current_shape.doesCollide(all_set_squares[i].get_rect())):
                 current_shape.make_set()
-                all_set_shapes.append(current_shape)
+                squareList = current_shape.get_squares()
+                for i in range (len(squareList)):
+                    all_set_squares.append(squareList[i])
                 rand_num = random.randint(0, len(shape_types)-1)
                 current_shape = shape_types[rand_num]()
+
+        for i in range(16):
+            remove_row, squares_to_remove = checkrow(i, all_set_squares)
+            if(remove_row):
+                print("removing")
+                for i in range(len(squares_to_remove)):
+                    all_set_squares.remove(squares_to_remove[i])
+                for i in range(len(all_set_squares)):
+                   all_set_squares[i].lower()
+            
+        
+        current_shape.draw(screen)
+        for i in range(len(all_set_squares)):
+            # print(all_set_squares[i])
+            all_set_squares[i].draw(screen)
 
         current_shape.drop(1)
         
