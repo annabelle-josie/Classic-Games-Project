@@ -1,186 +1,250 @@
-import pygame
+'''docstring here'''
 import random
+import pygame
 
 #TODO: Points system
-#TODO: Win/lose
-#TODO: Missing the weird shaped one!
+#TODO: Lose
+#TODO: Missing the weird shaped one! and some rotations broken
+#TODO: only move down on top
 
 class Square(pygame.sprite.Sprite):
+    '''docstring here'''
     def __init__(self, x, y, color):
+        '''docstring here'''
         super().__init__()
         self.position = (x, y)
         self.color = color
         self.set = False #set will decide if it is moving or still
 
     def draw(self, surface):
+        '''docstring here'''
         pygame.draw.rect(surface, self.color, (self.position[0], self.position[1], 40, 40), 5)
-    
+
     def get_position(self):
+        '''docstring here'''
         return self.position
-    
+
     def set_position(self, position):
+        '''docstring here'''
         self.position = position
-    
+
     def drop(self, speed):
+        '''docstring here'''
         self.position = (self.position[0], self.position[1]+speed)
-    
+
     def move(self, direction):
+        '''docstring here'''
         self.position = (self.position[0] + direction, self.position[1])
-    
+
     def is_set(self):
+        '''docstring here'''
         return set
-    
+
     def get_rect(self):
+        '''docstring here'''
         return(pygame.Rect(self.position, (40,40)))
-    
+
     def lower(self):
+        '''docstring here'''
         self.position = (self.position[0], self.position[1]+40)
 
 class Shape(pygame.sprite.Sprite):
+    '''docstring here'''
     def __init__(self):
+        '''docstring here'''
         super().__init__()
         self.squares = []
         self.is_set = False
+        self.current_rot = 0
 
     def draw(self, surface):
-        for i in range(len(self.squares)):
-            self.squares[i].draw(surface)
-    
+        '''docstring here'''
+        for _, square in enumerate(self.squares):
+            square.draw(surface)
+
     def drop(self, speed):
+        '''docstring here'''
         can_drop = True
-        for i in range(len(self.squares)):
-            if (self.squares[i].get_position()[1]+40+speed > 670):
+        for _, square in enumerate(self.squares):
+            if square.get_position()[1]+40+speed > 670:
                 can_drop = False
                 self.is_set = True
-        if(can_drop):
-            for i in range(len(self.squares)):
-                self.squares[i].drop(speed)
+        if can_drop:
+            for _, square in enumerate(self.squares):
+                square.drop(speed)
 
     def move_left(self):
+        '''docstring here'''
         can_move = True
-        for i in range(len(self.squares)):
-            if (self.squares[i].get_position()[0]-40 < 440):
+        for _, square in enumerate(self.squares):
+            if square.get_position()[0]-40 < 440:
                 can_move = False
-        if(can_move):
-            for i in range(len(self.squares)):
-                self.squares[i].move(-40)
+        if can_move:
+            for _, square in enumerate(self.squares):
+                square.move(-40)
 
     def move_right(self):
+        '''docstring here'''
         can_move = True
-        for i in range(len(self.squares)):
-            if (self.squares[i].get_position()[0]+80 > 840):
+        for _, square in enumerate(self.squares):
+            if square.get_position()[0]+80 > 840:
                 can_move = False
-        if(can_move):
-            for i in range(len(self.squares)):
-                self.squares[i].move(40)    
+        if can_move:
+            for _, square in enumerate(self.squares):
+                square.move(40)
 
     def get_is_set(self):
+        '''docstring here'''
         return self.is_set
-    
+
     def make_set(self):
+        '''docstring here'''
         self.is_set = True
-    
-    def doesCollide(self, given_rect):
+
+    def does_collide(self, given_rect):
+        '''docstring here'''
         collides = False
-        for i in range(len(self.squares)):
-            this_rect = self.squares[i].get_rect()
-            if(this_rect.colliderect(given_rect)):
+        for _, square in enumerate(self.squares):
+            this_rect = square.get_rect()
+            if this_rect.colliderect(given_rect):
                 collides = True
         return collides
-    
+
     def get_squares(self):
-        returnVal = []
-        for i in range (len(self.squares)):
-            returnVal.append(self.squares[i])
-        return returnVal
-    
+        '''docstring here'''
+        return_val = []
+        for _, square in enumerate(self.squares):
+            return_val.append(square)
+        return return_val
+
     def rotate(self, rotations):
+        '''docstring here'''
         position = [0,0]
         new_rot = (self.current_rot + 1) % (len(rotations))
-        for i in range(len(self.squares)):
-            position = list(self.squares[i].get_position())
+        for i, square in enumerate(self.squares):
+            position = list(square.get_position())
             position[0] -= rotations[self.current_rot][i][0]
             position[1] -= rotations[self.current_rot][i][1]
             position[0] += rotations[new_rot][i][0]
             position[1] += rotations[new_rot][i][1]
-            self.squares[i].set_position(tuple(position))
-            
-        self.current_rot = (self.current_rot + 1) % (len(rotations)) 
+            square.set_position(tuple(position))
+
+        self.current_rot = (self.current_rot + 1) % (len(rotations))
 
 class S_Shape(Shape):
+    '''docstring here'''
     def __init__(self):
+        '''docstring here'''
         super().__init__()
         self.squares = (Square(440,30, "#00ff00"), Square(440, 70, "#00ff00"), Square(480,70, "#00ff00"), Square(480,110, "#00ff00"))
-        self.rotations = [[(0,0), (0,40), (40,40), (40,80)],[(0,40), (40,0), (40,40), (80,0)]]
+        self.rotations = [
+            [(0,0), (0,40), (40,40), (40,80)],
+            [(0,40), (40,0), (40,40), (80,0)]
+            ]
         self.current_rot = 0
 
-    def rotate(self):
+    def rotate(self, rotations=None):
+        '''docstring here'''
         super().rotate(self.rotations)
 
 class Line_Shape(Shape):
+    '''docstring here'''
     def __init__(self):
+        '''docstring here'''
         super().__init__()
         self.squares = (Square(440,30, "#00ffff"), Square(440, 70, "#00ffff"), Square(440,110, "#00ffff"), Square(440,150, "#00ffff"))
-        self.rotations = [[(0,0), (0,40), (0,80), (0,120)],[(0,0), (40,0), (80,0), (120,0)]]
+        self.rotations = [
+            [(0,0), (0,40), (0,80), (0,120)],
+            [(0,0), (40,0), (80,0), (120,0)]
+            ]
         self.current_rot = 0
 
-    def rotate(self):
+    def rotate(self, rotations=None):
+        '''docstring here'''
         super().rotate(self.rotations)
 
 class Z_Shape(Shape):
+    '''docstring here'''
     def __init__(self):
+        '''docstring here'''
         super().__init__()
         self.squares = (Square(480,30, "#ff0000"), Square(440, 70, "#ff0000"), Square(480,70, "#ff0000"), Square(440,110, "#ff0000"))
-        self.rotations = [[(40,0), (0,40), (40,40), (0,80)],[(0,0), (40,0), (40,40), (80,40)]]
+        self.rotations = [
+            [(40,0), (0,40), (40,40), (0,80)],
+            [(0,0), (40,0), (40,40), (80,40)]
+            ]
         self.current_rot = 0
 
-    def rotate(self):
+    def rotate(self, rotations=None):
+        '''docstring here'''
         super().rotate(self.rotations)
 
 class Square_Shape(Shape):
+    '''docstring here'''
     def __init__(self):
+        '''docstring here'''
         super().__init__()
         self.squares = (Square(440,30, "#ffff00"), Square(440, 70, "#ffff00"), Square(480,30, "#ffff00"), Square(480,70, "#ffff00"))
         self.rotations = [[(0,0), (0,40), (40,0), (40,40)]]
         self.current_rot = 0
 
-    def rotate(self):
+    def rotate(self, rotations=None):
+        '''docstring here'''
         super().rotate(self.rotations)
 
 class L_Shape(Shape):
+    '''docstring here'''
     def __init__(self):
+        '''docstring here'''
         super().__init__()
         self.squares = (Square(440,30, "#ff7f00"), Square(440, 70, "#ff7f00"), Square(440,110, "#ff7f00"), Square(480,110, "#ff7f00"))
-        self.rotations = [[(0,0), (0,40), (0,80), (40,80)],[(0,0), (0,40), (40,0), (80,0)],[(0,0), (40,0), (40,40), (40,80)],[(80,0), (80,40), (40,40), (0,40)]]
+        self.rotations = [
+            [(0,0), (0,40), (0,80), (40,80)],
+            [(0,0), (0,40), (40,0), (80,0)],
+            [(0,0), (40,0), (40,40), (40,80)],
+            [(80,0), (80,40), (40,40), (0,40)]
+            ]
         self.current_rot = 0
 
-    def rotate(self):
+    def rotate(self, rotations=None):
+        '''docstring here'''
         super().rotate(self.rotations)
 
 class Rev_L_Shape(Shape):
+    '''docstring here'''
     def __init__(self):
+        '''docstring here'''
         super().__init__()
         self.squares = (Square(480,30, "#0000ff"), Square(480, 70, "#0000ff"), Square(480,110, "#0000ff"), Square(440,110, "#0000ff"))
-        self.rotations = [[(40,0), (40,40), (40,80), (0,80)],[(0,0), (0,40), (40,40), (80,40)],[(0,0), (0,40), (40,0), (80,0)],[(0,0), (40,0), (80,0), (80,40)]]
+        self.rotations = [
+            [(40,0), (40,40), (40,80), (0,80)],
+            [(0,0), (0,40), (40,40), (80,40)],
+            [(0,0), (0,40), (40,0), (80,0)],
+            [(0,0), (40,0), (80,0), (80,40)]
+            ]
         self.current_rot = 0
 
-    def rotate(self):
+    def rotate(self, rotations=None):
+        '''docstring here'''
         super().rotate(self.rotations)
 
 def checkrow(row_num, set_squares):
+    '''docstring here'''
     # 440,30 is top left corner, squares are 40x40
+    game_over = False
     row_height = (40 * row_num) + 30
     squares_on_row = []
-    for i in range(len(set_squares)):
-        if(set_squares[i].get_rect().y - row_height < 20 and set_squares[i].get_rect().y - row_height > -20):
-            squares_on_row.append(set_squares[i])
-    if(len(squares_on_row) == 10):
+    for _, square in enumerate(set_squares):
+        if square.get_rect().y - row_height < 20 and square.get_rect().y - row_height > -20:
+            squares_on_row.append(square)
+    if len(squares_on_row) == 10:
         print("delete row")
-        return True, squares_on_row
+        return True, squares_on_row, game_over
     else:
-        return False, []
+        return False, [], game_over
 
-def gameLoop():
+def game_loop():
+    '''docstring here'''
     screen_width = 1280
     screen_height = 700
     pygame.display.set_caption('Tetris')
@@ -190,16 +254,11 @@ def gameLoop():
     running = True
     escape_to_main = False
     dt = 0
-    
+    game_over = False
+
     current_shape = Line_Shape()
     all_set_squares = []
     shape_types = [S_Shape, Line_Shape, Z_Shape, Square_Shape, L_Shape, Rev_L_Shape]
-    # filled = [[0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], 
-    # [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0],
-    # [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], 
-    # [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], 
-    # [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0], 
-    # [0,0,0,0,0,0,0,0,0,0]]
 
     while running:
         screen.fill("black")
@@ -208,55 +267,70 @@ def gameLoop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif (event.type == pygame.KEYDOWN):
-                if(event.key == pygame.K_SPACE):
-                    current_shape.rotate()
-                if(event.key == pygame.K_LEFT):
-                    current_shape.move_left()
-                    current_shape.drop(-1)
-                elif(event.key == pygame.K_RIGHT):
-                    current_shape.move_right()
-                    current_shape.drop(-1)
-        
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_m] or keys[pygame.K_ESCAPE]:
-            escape_to_main = True
-        if keys[pygame.K_DOWN]:
-            current_shape.drop(2)
-        
-        if(current_shape.get_is_set()):
-            squareList = current_shape.get_squares()
-            for i in range (len(squareList)):
-                all_set_squares.append(squareList[i])
-            rand_num = random.randint(0, len(shape_types)-1)
-            current_shape = shape_types[rand_num]()
-        
-        for i in range(len(all_set_squares)):
-            if(current_shape.doesCollide(all_set_squares[i].get_rect())):
-                current_shape.make_set()
-                squareList = current_shape.get_squares()
-                for i in range (len(squareList)):
-                    all_set_squares.append(squareList[i])
+                escape_to_main = True
+
+        current_shape.draw(screen)
+        for _, square in enumerate(all_set_squares):
+            square.draw(screen)
+
+        if not game_over:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        current_shape.rotate()
+                    if event.key == pygame.K_LEFT:
+                        current_shape.move_left()
+                        current_shape.drop(-1)
+                    elif event.key == pygame.K_RIGHT:
+                        current_shape.move_right()
+                        current_shape.drop(-1)
+
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_DOWN]:
+                current_shape.drop(2)
+
+            if current_shape.get_is_set():
+                square_list = current_shape.get_squares()
+                for _, square in enumerate(square_list):
+                    all_set_squares.append(square)
                 rand_num = random.randint(0, len(shape_types)-1)
                 current_shape = shape_types[rand_num]()
 
-        for i in range(16):
-            remove_row, squares_to_remove = checkrow(i, all_set_squares)
-            if(remove_row):
-                print("removing")
-                for i in range(len(squares_to_remove)):
-                    all_set_squares.remove(squares_to_remove[i])
-                for i in range(len(all_set_squares)):
-                   all_set_squares[i].lower()
-            
-        
-        current_shape.draw(screen)
-        for i in range(len(all_set_squares)):
-            # print(all_set_squares[i])
-            all_set_squares[i].draw(screen)
+            for i, square in enumerate(all_set_squares):
+                if current_shape.does_collide(square.get_rect()):
+                    current_shape.make_set()
+                    square_list = current_shape.get_squares()
+                    for _, square in enumerate(square_list):
+                        all_set_squares.append(square)
+                    rand_num = random.randint(0, len(shape_types)-1)
+                    current_shape = shape_types[rand_num]()
 
-        current_shape.drop(1)
-        
+            for i in range(16):
+                remove_row, squares_to_remove, game_over = checkrow(i, all_set_squares)
+                if remove_row:
+                    print("removing")
+                    for _, square in enumerate(squares_to_remove):
+                        all_set_squares.remove(square)
+                    for _, square in enumerate(all_set_squares):
+                        square.lower()
+
+            current_shape.draw(screen)
+            for _, square in enumerate(all_set_squares):
+                square.draw(screen)
+
+            current_shape.drop(1)
+        else:
+            main_font = pygame.font.SysFont('Press_Start_2P', 100)
+            instrc_font = pygame.font.SysFont('Press_Start_2P', 25)
+
+            text_surface = main_font.render('Game Over', False, "white")
+            screen.blit(text_surface, (200,275))
+            text_surface = instrc_font.render('Press R to restart', False, "white")
+            screen.blit(text_surface, (350,400))
+
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
@@ -266,4 +340,4 @@ def gameLoop():
     pygame.quit()
 
 if __name__ == "__main__":
-    gameLoop()
+    game_loop()

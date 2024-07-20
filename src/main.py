@@ -1,10 +1,12 @@
+'''docstring here'''
 import pygame
-from brick import gameLoop as breakout
-from tetris import gameLoop as tetris
+from brick import game_loop as breakout
+from tetris import game_loop as tetris
 
 #TODO: Add size toggle
 
-def gameLauncher():
+def game_launcher():
+    '''docstring here'''
     pygame.init()
     screen = pygame.display.set_mode((1280, 720))
     clock = pygame.time.Clock()
@@ -14,7 +16,7 @@ def gameLauncher():
     current_screen = "welcome"
 
     while running:
-        mouse_x = 0 
+        mouse_x = 0
         mouse_y = 0
 
         pygame.display.set_caption('Retro Games')
@@ -27,14 +29,14 @@ def gameLauncher():
 
         pygame.font.init()
 
-        if(current_screen == "welcome"):
+        if current_screen == "welcome":
             imp = pygame.image.load("src/images/homescreen.png").convert()
             screen.blit(imp, (0, 0))
 
             start_rect = pygame.Rect(450, 425, 375, 65)
-            if(start_rect.collidepoint(mouse_x, mouse_y)):
+            if start_rect.collidepoint(mouse_x, mouse_y):
                 current_screen = "game_choice"
-        elif(current_screen == "game_choice"):
+        elif current_screen == "game_choice":
             imp = pygame.image.load("src/images/game_choice.png").convert()
             screen.blit(imp, (0, 0))
 
@@ -50,23 +52,20 @@ def gameLauncher():
             tetris_text_rect.move_ip(300,275)
             screen.blit(tetris_text, tetris_text_rect)
 
-            if (breakout_text_rect.collidepoint(mouse_x, mouse_y)):
+            if breakout_text_rect.collidepoint(mouse_x, mouse_y):
                 escape = False
-                while(not escape):
+                while not escape:
                     escape = breakout()
-            elif(tetris_text_rect.collidepoint(mouse_x, mouse_y)):
+            elif tetris_text_rect.collidepoint(mouse_x, mouse_y):
                 escape = False
-                while(not escape):
+                while not escape:
                     escape = tetris()
                     screen = pygame.display.set_mode((1280,700))
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
-        
-
     pygame.quit()
 
-
 if __name__ == '__main__':
-    gameLauncher()
+    game_launcher()
