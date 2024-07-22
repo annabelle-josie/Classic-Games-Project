@@ -232,13 +232,14 @@ def checkrow(row_num, set_squares):
     '''docstring here'''
     # 440,30 is top left corner, squares are 40x40
     game_over = False
+    # if row_num == 16:
+    #     game_over = True
     row_height = (40 * row_num) + 30
     squares_on_row = []
     for _, square in enumerate(set_squares):
         if square.get_rect().y - row_height < 20 and square.get_rect().y - row_height > -20:
             squares_on_row.append(square)
     if len(squares_on_row) == 10:
-        print("delete row")
         return True, squares_on_row, game_over
     else:
         return False, [], game_over
@@ -264,9 +265,6 @@ def game_loop():
         screen.fill("black")
         background_images = pygame.image.load("src/images/tetris_background.png").convert()
         screen.blit(background_images, (0, 0))
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_m] or keys[pygame.K_ESCAPE]:
@@ -276,8 +274,11 @@ def game_loop():
         for _, square in enumerate(all_set_squares):
             square.draw(screen)
 
+        print(game_over)
         if not game_over:
             for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         current_shape.rotate()
@@ -305,13 +306,19 @@ def game_loop():
                     square_list = current_shape.get_squares()
                     for _, square in enumerate(square_list):
                         all_set_squares.append(square)
+                        if square.get_position()[1] < 50:
+                            game_over = True
+                            break
+                    if game_over:
+                        break
                     rand_num = random.randint(0, len(shape_types)-1)
                     current_shape = shape_types[rand_num]()
 
             for i in range(16):
-                remove_row, squares_to_remove, game_over = checkrow(i, all_set_squares)
+                remove_row, squares_to_remove, temp_over = checkrow(i, all_set_squares)
+                if temp_over:
+                    game_over = True
                 if remove_row:
-                    print("removing")
                     for _, square in enumerate(squares_to_remove):
                         all_set_squares.remove(square)
                     for _, square in enumerate(all_set_squares):
@@ -323,13 +330,26 @@ def game_loop():
 
             current_shape.drop(1)
         else:
-            main_font = pygame.font.SysFont('Press_Start_2P', 100)
-            instrc_font = pygame.font.SysFont('Press_Start_2P', 25)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_r]:
+                #Reset
+                game_over = False
+                current_shape = Line_Shape()
+                all_set_squares = []
+                shape_types = [S_Shape, Line_Shape, Z_Shape, Square_Shape, L_Shape, Rev_L_Shape]
 
-            text_surface = main_font.render('Game Over', False, "white")
-            screen.blit(text_surface, (200,275))
-            text_surface = instrc_font.render('Press R to restart', False, "white")
-            screen.blit(text_surface, (350,400))
+
+            game_font = pygame.font.SysFont('Press_Start_2P', 50)
+            rest_font = pygame.font.SysFont('Press_Start_2P', 25)
+
+            pygame.draw.rect(screen, "white", (450, 250, 375, 200))
+            text_surface = game_font.render('Game Over', False, "white")
+            screen.blit(text_surface, (200,500))
+            text_surface = rest_font.render('Press R to restart', False, "white")
+            screen.blit(text_surface, (350,550))
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
