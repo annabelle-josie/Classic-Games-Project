@@ -2,8 +2,6 @@
 import random
 import pygame
 
-#TODO: Points system
-#TODO: Lose
 #TODO: Missing the weird shaped one! and some rotations broken
 #TODO: only move down on top
 
@@ -62,7 +60,7 @@ class Shape(pygame.sprite.Sprite):
         for _, square in enumerate(self.squares):
             square.draw(surface)
 
-    def drop(self, speed):
+    def drop(self, speed, score):
         '''docstring here'''
         can_drop = True
         for _, square in enumerate(self.squares):
@@ -72,6 +70,8 @@ class Shape(pygame.sprite.Sprite):
         if can_drop:
             for _, square in enumerate(self.squares):
                 square.drop(speed)
+        score += (speed-1)
+        return score
 
     def move_left(self):
         '''docstring here'''
@@ -255,8 +255,9 @@ def game_loop():
     running = True
     escape_to_main = False
     dt = 0
-    game_over = False
 
+    game_over = False
+    score = 0
     current_shape = Line_Shape()
     all_set_squares = []
     shape_types = [S_Shape, Line_Shape, Z_Shape, Square_Shape, L_Shape, Rev_L_Shape]
@@ -284,14 +285,14 @@ def game_loop():
                         current_shape.rotate()
                     if event.key == pygame.K_LEFT:
                         current_shape.move_left()
-                        current_shape.drop(-1)
+                        # current_shape.drop(-1)
                     elif event.key == pygame.K_RIGHT:
                         current_shape.move_right()
-                        current_shape.drop(-1)
+                        # current_shape.drop(-1)
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_DOWN]:
-                current_shape.drop(2)
+                score = current_shape.drop(2, score)
 
             if current_shape.get_is_set():
                 square_list = current_shape.get_squares()
@@ -319,6 +320,7 @@ def game_loop():
                 if temp_over:
                     game_over = True
                 if remove_row:
+                    score += 1600
                     for _, square in enumerate(squares_to_remove):
                         all_set_squares.remove(square)
                     for _, square in enumerate(all_set_squares):
@@ -328,7 +330,11 @@ def game_loop():
             for _, square in enumerate(all_set_squares):
                 square.draw(screen)
 
-            current_shape.drop(1)
+            score_font = pygame.font.SysFont('Press_Start_2P', 40)
+            score_surface = score_font.render(str(round(score/16)), False, "white")
+            screen.blit(score_surface, (150,200))
+
+            score = current_shape.drop(1, score)
         else:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -337,10 +343,10 @@ def game_loop():
             if keys[pygame.K_r]:
                 #Reset
                 game_over = False
+                score = 0
                 current_shape = Line_Shape()
                 all_set_squares = []
                 shape_types = [S_Shape, Line_Shape, Z_Shape, Square_Shape, L_Shape, Rev_L_Shape]
-
 
             game_font = pygame.font.SysFont('Press_Start_2P', 40)
             rest_font = pygame.font.SysFont('Press_Start_2P', 20)
