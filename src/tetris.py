@@ -232,8 +232,6 @@ def checkrow(row_num, set_squares):
     '''docstring here'''
     # 440,30 is top left corner, squares are 40x40
     game_over = False
-    # if row_num == 16:
-    #     game_over = True
     row_height = (40 * row_num) + 30
     squares_on_row = []
     for _, square in enumerate(set_squares):
@@ -324,6 +322,7 @@ def game_loop():
                     for _, square in enumerate(squares_to_remove):
                         all_set_squares.remove(square)
                     for _, square in enumerate(all_set_squares):
+                        # Only lower below
                         square.lower()
 
             current_shape.draw(screen)
