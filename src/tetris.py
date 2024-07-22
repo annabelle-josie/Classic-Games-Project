@@ -342,14 +342,14 @@ def game_loop():
                 shape_types = [S_Shape, Line_Shape, Z_Shape, Square_Shape, L_Shape, Rev_L_Shape]
 
 
-            game_font = pygame.font.SysFont('Press_Start_2P', 50)
-            rest_font = pygame.font.SysFont('Press_Start_2P', 25)
+            game_font = pygame.font.SysFont('Press_Start_2P', 40)
+            rest_font = pygame.font.SysFont('Press_Start_2P', 20)
 
-            pygame.draw.rect(screen, "white", (450, 250, 375, 200))
-            text_surface = game_font.render('Game Over', False, "white")
-            screen.blit(text_surface, (200,500))
-            text_surface = rest_font.render('Press R to restart', False, "white")
-            screen.blit(text_surface, (350,550))
+            pygame.draw.rect(screen, "white", (450, 250, 375, 150))
+            text_surface = game_font.render('Game Over', False, "black")
+            screen.blit(text_surface, (465,300))
+            text_surface = rest_font.render('Press R to restart', False, "black")
+            screen.blit(text_surface, (460,350))
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
