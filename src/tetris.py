@@ -3,7 +3,6 @@ import random
 import pygame
 
 #TODO: Missing the weird shaped one! and some rotations broken
-#TODO: only move down on top
 
 class Square(pygame.sprite.Sprite):
     '''docstring here'''
@@ -273,7 +272,6 @@ def game_loop():
         for _, square in enumerate(all_set_squares):
             square.draw(screen)
 
-        print(game_over)
         if not game_over:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
