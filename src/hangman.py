@@ -3,7 +3,12 @@ import pygame
 
 def reveal_letters(letter, word, displayed_word):
     '''docstring here'''
-    print("hello world")
+    displayed_word = displayed_word.split()
+    print(letter, word, displayed_word)
+    for i, w_letter in enumerate(word):
+        if w_letter == letter:
+            displayed_word[i] = letter
+    displayed_word = ' '.join(displayed_word)
     return(displayed_word)
 
 def game_loop():
@@ -31,20 +36,29 @@ def game_loop():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_m] or keys[pygame.K_ESCAPE]:
             escape_to_main = True
+        if not game_over:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.KEYDOWN:
+                    # A = 97 Z = 122
+                    if chr(event.key) in word:
+                        displayed_word = reveal_letters(chr(event.key), word, displayed_word)
+                    else:
+                        if hangman_count > 5:
+                            print("agadgafh")
+                            game_over = True
+                        else:
+                            print("pssgas")
+                            hangman_count+=1
+        else:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                # A = 97 Z = 122
-                if chr(event.key) in word:
-                    displayed_word = reveal_letters(event.key, word, displayed_word)
-                else:
-                    hangman_count+=1
-                    if hangman_count > 6:
-                        game_over = True
-                if event.key == pygame.K_SPACE:
-                    hangman_count+=1
+            go_font = pygame.font.SysFont('Press_Start_2P', 40)
+            go_surface = go_font.render("GAME OVER", False, "red")
+            screen.blit(go_surface, (450,125))
 
         word_font = pygame.font.SysFont('Press_Start_2P', 40)
         word_display = word_font.render(displayed_word, False, "black")
