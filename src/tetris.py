@@ -321,9 +321,10 @@ def game_loop():
                     score += 1600
                     for _, square in enumerate(squares_to_remove):
                         all_set_squares.remove(square)
+                    removed_row_y = squares_to_remove[1].get_position()[1] # Y pos of removing row
                     for _, square in enumerate(all_set_squares):
-                        # Only lower below
-                        square.lower()
+                        if square.get_position()[1] < removed_row_y:
+                            square.lower()
 
             current_shape.draw(screen)
             for _, square in enumerate(all_set_squares):
