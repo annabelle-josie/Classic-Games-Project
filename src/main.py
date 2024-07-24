@@ -2,6 +2,7 @@
 import pygame
 from brick import game_loop as breakout
 from tetris import game_loop as tetris
+from hangman import game_loop as hangman
 
 #TODO: Add size toggle
 
@@ -52,6 +53,11 @@ def game_launcher():
             tetris_text_rect.move_ip(300,275)
             screen.blit(tetris_text, tetris_text_rect)
 
+            hangman_text = main_font.render('3. Hangman', False, ("white"))
+            hangman_text_rect = hangman_text.get_rect()
+            hangman_text_rect.move_ip(300,325)
+            screen.blit(hangman_text, hangman_text_rect)
+
             if breakout_text_rect.collidepoint(mouse_x, mouse_y):
                 escape = False
                 while not escape:
@@ -60,7 +66,10 @@ def game_launcher():
                 escape = False
                 while not escape:
                     escape = tetris()
-                    screen = pygame.display.set_mode((1280,700))
+            elif hangman_text_rect.collidepoint(mouse_x, mouse_y):
+                escape = False
+                while not escape:
+                    escape = hangman()
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000

@@ -1,5 +1,6 @@
 '''docstring here'''
 import pygame
+import random
 
 class Letter(pygame.sprite.Sprite):
     '''Letters to be displayed to show what has been chosen already'''
@@ -45,10 +46,16 @@ class Letter(pygame.sprite.Sprite):
         else:
             return True
 
+def chose_word():
+    lines = open("src/hangman_words.txt").read().splitlines()
+    word = random.choice(lines)
+    print(word)
+    displayed_word = "_ " * (len(word))
+    return word, displayed_word
+
 def reveal_letters(letter, word, displayed_word):
     '''docstring here'''
     displayed_word = displayed_word.split()
-    print(letter, word, displayed_word)
     for i, w_letter in enumerate(word):
         if w_letter == letter:
             displayed_word[i] = letter
@@ -67,10 +74,10 @@ def game_loop():
     escape_to_main = False
     dt = 0
 
+    in_a_row = 0
     game_over = False
     hangman_count = 0
-    word = "hello"
-    displayed_word = "_ _ _ _ _ "
+    word, displayed_word = chose_word()
     letter_list = [Letter(455,285, "A"), Letter(535,285, "B"), Letter(615,285, "C"), Letter(695,285, "D"),
                    Letter(775,285, "E"), Letter(455,345, "F"), Letter(535,345, "G"), Letter(615,345, "H"),
                    Letter(695,345, "I"), Letter(775,345, "J"), Letter(455,405, "K"), Letter(535,405, "L"),
@@ -83,6 +90,18 @@ def game_loop():
         screen.fill("white")
         background_images = pygame.image.load("src/images/hangman_background.png").convert()
         screen.blit(background_images, (0, 0))
+
+        if "_" not in displayed_word:
+                word, displayed_word = chose_word()
+                hangman_count = 0
+                in_a_row += 1
+                letter_list = [Letter(455,285, "A"), Letter(535,285, "B"), Letter(615,285, "C"), Letter(695,285, "D"),
+                            Letter(775,285, "E"), Letter(455,345, "F"), Letter(535,345, "G"), Letter(615,345, "H"),
+                            Letter(695,345, "I"), Letter(775,345, "J"), Letter(455,405, "K"), Letter(535,405, "L"),
+                            Letter(615,405, "M"), Letter(695,405, "N"), Letter(775,405, "O"), Letter(455,465, "P"),
+                            Letter(535,465, "Q"), Letter(615,465, "R"), Letter(695,465, "S"), Letter(775,465, "T"),
+                            Letter(455,525, "U"), Letter(535,525, "V"), Letter(615,525, "Y"), Letter(695,525, "X"),
+                            Letter(775,525, "Y"), Letter(615,585, "Z")]
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] or keys[pygame.K_ESCAPE]:
@@ -104,11 +123,9 @@ def game_loop():
                     trigger_reveal = i
             if trigger_reveal >= 0:
                 if chr(trigger_reveal+97) in word:
-                    print("in the word")
                     displayed_word = reveal_letters(chr(trigger_reveal+97), word, displayed_word)
                     letter_list[trigger_reveal].correct()
                 else:
-                    print("not in the word")
                     if hangman_count > 5:
                         game_over = True
                     elif not letter_list[trigger_reveal].been_chosen():
@@ -119,6 +136,10 @@ def game_loop():
         word_display = word_font.render(displayed_word, False, "black")
         screen.blit(word_display, (450,125))
 
+        score_font = pygame.font.SysFont('Press_Start_2P', 50)
+        score_display = score_font.render(str(in_a_row), False, "black")
+        screen.blit(score_display, (165,150))
+
         hangman_image = pygame.image.load("src/images/hangman_images/"+str(hangman_count)+".png").convert()
         hangman_image = pygame.transform.scale(hangman_image, (350, 400))
         screen.blit(hangman_image, (875, 250))
@@ -128,12 +149,32 @@ def game_loop():
 
         if game_over:
             for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    # A = 97 Z = 12
+                    if chr(event.key) == ".":
+                        game_over = False
+                        word, displayed_word = chose_word()
+                        hangman_count = 0
+                        in_a_row = 0
+                        letter_list = [Letter(455,285, "A"), Letter(535,285, "B"), Letter(615,285, "C"), Letter(695,285, "D"),
+                                    Letter(775,285, "E"), Letter(455,345, "F"), Letter(535,345, "G"), Letter(615,345, "H"),
+                                    Letter(695,345, "I"), Letter(775,345, "J"), Letter(455,405, "K"), Letter(535,405, "L"),
+                                    Letter(615,405, "M"), Letter(695,405, "N"), Letter(775,405, "O"), Letter(455,465, "P"),
+                                    Letter(535,465, "Q"), Letter(615,465, "R"), Letter(695,465, "S"), Letter(775,465, "T"),
+                                    Letter(455,525, "U"), Letter(535,525, "V"), Letter(615,525, "Y"), Letter(695,525, "X"),
+                                    Letter(775,525, "Y"), Letter(615,585, "Z")]
+
+            for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
             go_font = pygame.font.SysFont('Press_Start_2P', 40)
             go_surface = go_font.render("GAME OVER", False, "red")
             screen.blit(go_surface, (450,200))
+
+            go_font = pygame.font.SysFont('Press_Start_2P', 20)
+            go_text_surface = go_font.render("Press . to restart", False, "red")
+            screen.blit(go_text_surface, (50,550))
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
