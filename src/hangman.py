@@ -23,6 +23,13 @@ class Letter(pygame.sprite.Sprite):
         letter_display = letter_font.render(self.text, False, letter_color)
         surface.blit(letter_display, self.position)
 
+    def get_rect(self):
+        '''Returns a rect of the letter'''
+        return pygame.Rect(self.position, (35,40))
+
+    def get_text(self):
+        return self.text
+
     def incorrect(self):
         '''Sets history to incorrect'''
         self.history = "incorrect"
@@ -30,6 +37,13 @@ class Letter(pygame.sprite.Sprite):
     def correct(self):
         '''Sets history to correct'''
         self.history = "correct"
+    
+    def been_chosen(self):
+        '''Return True if has been chosen in the past'''
+        if self.history == "not_chosen":
+            return False
+        else:
+            return True
 
 def reveal_letters(letter, word, displayed_word):
     '''docstring here'''
@@ -57,7 +71,7 @@ def game_loop():
     hangman_count = 0
     word = "hello"
     displayed_word = "_ _ _ _ _ "
-    letter_grid = [Letter(455,285, "A"), Letter(535,285, "B"), Letter(615,285, "C"), Letter(695,285, "D"),
+    letter_list = [Letter(455,285, "A"), Letter(535,285, "B"), Letter(615,285, "C"), Letter(695,285, "D"),
                    Letter(775,285, "E"), Letter(455,345, "F"), Letter(535,345, "G"), Letter(615,345, "H"),
                    Letter(695,345, "I"), Letter(775,345, "J"), Letter(455,405, "K"), Letter(535,405, "L"),
                    Letter(615,405, "M"), Letter(695,405, "N"), Letter(775,405, "O"), Letter(455,465, "P"),
@@ -73,21 +87,33 @@ def game_loop():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] or keys[pygame.K_ESCAPE]:
             escape_to_main = True
+        mouse_pos = (0,0)
         if not game_over:
+            trigger_reveal = -1
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
                 if event.type == pygame.KEYDOWN:
-                    # A = 97 Z = 122
-                    if chr(event.key) in word:
-                        displayed_word = reveal_letters(chr(event.key), word, displayed_word)
-                        letter_grid[event.key - 97].correct()
-                    else:
-                        letter_grid[event.key - 97].incorrect()
-                        if hangman_count > 5:
-                            game_over = True
-                        else:
-                            hangman_count+=1
+                    # A = 97 Z = 12
+                    trigger_reveal = event.key - 97
+
+            for i, letter in enumerate(letter_list):
+                if letter.get_rect().collidepoint(mouse_pos):
+                    trigger_reveal = i
+            if trigger_reveal >= 0:
+                if chr(trigger_reveal+97) in word:
+                    print("in the word")
+                    displayed_word = reveal_letters(chr(trigger_reveal+97), word, displayed_word)
+                    letter_list[trigger_reveal].correct()
+                else:
+                    print("not in the word")
+                    if hangman_count > 5:
+                        game_over = True
+                    elif not letter_list[trigger_reveal].been_chosen():
+                        hangman_count+=1
+                    letter_list[trigger_reveal].incorrect()
 
         word_font = pygame.font.SysFont('Press_Start_2P', 40)
         word_display = word_font.render(displayed_word, False, "black")
@@ -97,9 +123,9 @@ def game_loop():
         hangman_image = pygame.transform.scale(hangman_image, (350, 400))
         screen.blit(hangman_image, (875, 250))
 
-        for letter in letter_grid:
+        for letter in letter_list:
             letter.draw(screen)
-        
+
         if game_over:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
