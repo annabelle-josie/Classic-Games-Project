@@ -1,6 +1,36 @@
 '''docstring here'''
 import pygame
 
+class Letter(pygame.sprite.Sprite):
+    '''Letters to be displayed to show what has been chosen already'''
+    def __init__(self, x, y, text):
+        '''docstring here'''
+        super().__init__()
+        self.position = (x, y)
+        self.text = text
+        self.history = "not_chosen" # Options will be "not_chosen", "correct", "incorrect"
+    
+    def draw(self, surface):
+        '''Draws the letter with correct color according to history'''
+        if self.history=="not_chosen":
+            letter_color = "black"
+        elif self.history == "correct":
+            letter_color = "green"
+        elif self.history == "incorrect":
+            letter_color = "red"
+
+        letter_font = pygame.font.SysFont('Press_Start_2P', 40)
+        letter_display = letter_font.render(self.text, False, letter_color)
+        surface.blit(letter_display, self.position)
+
+    def incorrect(self):
+        '''Sets history to incorrect'''
+        self.history = "incorrect"
+
+    def correct(self):
+        '''Sets history to correct'''
+        self.history = "correct"
+
 def reveal_letters(letter, word, displayed_word):
     '''docstring here'''
     displayed_word = displayed_word.split()
@@ -27,6 +57,13 @@ def game_loop():
     hangman_count = 0
     word = "hello"
     displayed_word = "_ _ _ _ _ "
+    letter_grid = [Letter(455,285, "A"), Letter(535,285, "B"), Letter(615,285, "C"), Letter(695,285, "D"),
+                   Letter(775,285, "E"), Letter(455,345, "F"), Letter(535,345, "G"), Letter(615,345, "H"),
+                   Letter(695,345, "I"), Letter(775,345, "J"), Letter(455,405, "K"), Letter(535,405, "L"),
+                   Letter(615,405, "M"), Letter(695,405, "N"), Letter(775,405, "O"), Letter(455,465, "P"),
+                   Letter(535,465, "Q"), Letter(615,465, "R"), Letter(695,465, "S"), Letter(775,465, "T"),
+                   Letter(455,525, "U"), Letter(535,525, "V"), Letter(615,525, "Y"), Letter(695,525, "X"),
+                   Letter(775,525, "Y"), Letter(615,585, "Z")]
 
     while running:
         screen.fill("white")
@@ -34,7 +71,7 @@ def game_loop():
         screen.blit(background_images, (0, 0))
 
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_m] or keys[pygame.K_ESCAPE]:
+        if keys[pygame.K_SPACE] or keys[pygame.K_ESCAPE]:
             escape_to_main = True
         if not game_over:
             for event in pygame.event.get():
@@ -44,21 +81,13 @@ def game_loop():
                     # A = 97 Z = 122
                     if chr(event.key) in word:
                         displayed_word = reveal_letters(chr(event.key), word, displayed_word)
+                        letter_grid[event.key - 97].correct()
                     else:
+                        letter_grid[event.key - 97].incorrect()
                         if hangman_count > 5:
-                            print("agadgafh")
                             game_over = True
                         else:
-                            print("pssgas")
                             hangman_count+=1
-        else:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-
-            go_font = pygame.font.SysFont('Press_Start_2P', 40)
-            go_surface = go_font.render("GAME OVER", False, "red")
-            screen.blit(go_surface, (450,125))
 
         word_font = pygame.font.SysFont('Press_Start_2P', 40)
         word_display = word_font.render(displayed_word, False, "black")
@@ -67,6 +96,18 @@ def game_loop():
         hangman_image = pygame.image.load("src/images/hangman_images/"+str(hangman_count)+".png").convert()
         hangman_image = pygame.transform.scale(hangman_image, (350, 400))
         screen.blit(hangman_image, (875, 250))
+
+        for letter in letter_grid:
+            letter.draw(screen)
+        
+        if game_over:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+
+            go_font = pygame.font.SysFont('Press_Start_2P', 40)
+            go_surface = go_font.render("GAME OVER", False, "red")
+            screen.blit(go_surface, (450,200))
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
