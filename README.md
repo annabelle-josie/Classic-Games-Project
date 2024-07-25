@@ -20,9 +20,8 @@ Work on game design principles, improve use of Git and Github - especially using
 ## Proposed Emulator features (Not yet complete)
 
 1. Central game launcher
-2. Size toggle (small to be played over other apps e.g. boring zoom meetings, or large)
-3. Music?
-4. High Score per game?
+2. Music?
+3. High Score per game?
 
 ## Games included in Emulator
 
