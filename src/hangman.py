@@ -66,7 +66,7 @@ def game_loop():
     '''docstring here'''
     screen_width = 1280
     screen_height = 700
-    pygame.display.set_caption('Tetris')
+    pygame.display.set_caption('Hangman')
     pygame.init()
     screen = pygame.display.set_mode((screen_width, screen_height))
     clock = pygame.time.Clock()
