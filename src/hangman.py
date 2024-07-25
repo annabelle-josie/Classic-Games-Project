@@ -169,7 +169,7 @@ def game_loop():
                     running = False
 
             go_font = pygame.font.SysFont('Press_Start_2P', 40)
-            go_surface = go_font.render("GAME OVER", False, "red")
+            go_surface = go_font.render("GAME OVER word was:" + word, False, "red")
             screen.blit(go_surface, (450,200))
 
             go_font = pygame.font.SysFont('Press_Start_2P', 20)

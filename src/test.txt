@@ -1,5 +1,0 @@
-hello
-world
-blah
-sing
-blob
