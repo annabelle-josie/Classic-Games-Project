@@ -28,9 +28,9 @@ Work on game design principles, improve use of Git and Github - especially using
 
 1. Breakout
 2. Tetris
+3. Hangman
 
 ## Future Games to be added
 
 1. Snake
-2. Hangman
-3. Flappy bird
+2. Flappy bird
