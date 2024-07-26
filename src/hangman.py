@@ -149,6 +149,8 @@ def game_loop():
 
         if game_over:
             for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
                 if event.type == pygame.KEYDOWN:
                     # A = 97 Z = 12
                     if chr(event.key) == ".":
@@ -164,17 +166,17 @@ def game_loop():
                                     Letter(455,525, "U"), Letter(535,525, "V"), Letter(615,525, "Y"), Letter(695,525, "X"),
                                     Letter(775,525, "Y"), Letter(615,585, "Z")]
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-
             go_font = pygame.font.SysFont('Press_Start_2P', 40)
-            go_surface = go_font.render("GAME OVER word was:" + word, False, "red")
+            go_surface = go_font.render("GAME OVER", False, "red")
             screen.blit(go_surface, (450,200))
 
             go_font = pygame.font.SysFont('Press_Start_2P', 20)
             go_text_surface = go_font.render("Press . to restart", False, "red")
             screen.blit(go_text_surface, (50,550))
+
+            go_text_surface = go_font.render("Word: " + word, False, "red")
+            screen.blit(go_text_surface, (50,600))
+            
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000

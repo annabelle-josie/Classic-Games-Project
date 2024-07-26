@@ -1,37 +1,59 @@
 '''docstring here'''
 import pygame
-import random
+# import random
 
 class Snake(pygame.sprite.Sprite):
+    '''Snake Class, each block has position and an indication of its movement'''
     def __init__(self, x, y, is_head):
+        '''docstring here'''
         super().__init__()
         self.position = (x,y)
         self.direction = "left"
         self.head = is_head
-    
+        self.velocity = (-5,0)
+
     def draw(self, surface):
-         pygame.draw.rect(surface, "green", (self.position[0], self.position[1], 40, 40))
-    
-    def isHead(self):
+        '''docstring here'''
+        pygame.draw.rect(surface, "green", (self.position[0], self.position[1], 40, 40))
+
+    def update_head(self):
+        self.position = (self.position[0] + self.velocity[0], self.position[1] + self.velocity[1])
+
+    def update_body(self, previous_vel):
+        '''docstring here'''
+        self.position = (self.position[0] + previous_vel[0], self.position[1] + previous_vel[1])
+
+    def is_head(self):
+        '''docstring here'''
         return self.head
     
+    def get_vel(self):
+        '''docstring here'''
+        return self.velocity
+
     def move_left(self):
+        '''docstring here'''
         if self.direction != "right":
             self.direction = "left"
-    
+            self.velocity = (-5, 0)
+
     def move_right(self):
+        '''docstring here'''
         if self.direction != "left":
             self.direction = "right"
-    
+            self.velocity = (5, 0)
+
     def move_up(self):
+        '''docstring here'''
         if self.direction != "down":
             self.direction = "up"
+            self.velocity = (0, -5)
 
     def move_down(self):
+        '''docstring here'''
         if self.direction != "up":
             self.direction = "down"
-
-
+            self.velocity = (0, 5)
 
 def game_loop():
     '''docstring here'''
@@ -44,6 +66,7 @@ def game_loop():
     running = True
     escape_to_main = False
     dt = 0
+    snake = [Snake(400,400, True), Snake(400, 450, False)]
 
     game_over = False
 
@@ -70,6 +93,13 @@ def game_loop():
                 snake[0].move_down()
             elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
                 snake[0].move_right()
+
+        for i, piece in enumerate(snake):
+            if i == 0:
+                piece.update_head()
+            else:
+                piece.update_body(snake[i-1].get_vel())
+            piece.draw(screen)
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
