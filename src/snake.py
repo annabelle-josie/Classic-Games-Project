@@ -4,56 +4,86 @@ import pygame
 
 class Snake(pygame.sprite.Sprite):
     '''Snake Class, each block has position and an indication of its movement'''
-    def __init__(self, x, y, is_head):
+    def __init__(self, x, y, is_head, name):
         '''docstring here'''
         super().__init__()
         self.position = (x,y)
         self.direction = "left"
+        self.pre_direction = "left"
         self.head = is_head
-        self.velocity = (-5,0)
+        self.name = name
 
     def draw(self, surface):
         '''docstring here'''
-        pygame.draw.rect(surface, "green", (self.position[0], self.position[1], 40, 40))
+        pygame.draw.rect(surface, "green", (self.position[0], self.position[1], 20, 20))
 
-    def update_head(self):
-        self.position = (self.position[0] + self.velocity[0], self.position[1] + self.velocity[1])
-
-    def update_body(self, previous_vel):
+    def get_name(self):
         '''docstring here'''
-        self.position = (self.position[0] + previous_vel[0], self.position[1] + previous_vel[1])
+        return self.name
+
+    def get_direction(self):
+        '''docstring here'''
+        return self.direction
+
+    def get_pre_dir(self):
+        '''docstring here'''
+        return self.pre_direction
 
     def is_head(self):
         '''docstring here'''
         return self.head
-    
+
     def get_vel(self):
         '''docstring here'''
         return self.velocity
 
+    def update_head(self):
+        '''docstring here'''
+        if self.direction == "right":
+            velocity = (10,0)
+        elif self.direction == "left":
+            velocity = (-10,0)
+        elif self.direction == "up":
+            velocity = (0,-10)
+        elif self.direction == "down":
+            velocity = (0,10)
+        self.position = (self.position[0] + velocity[0], self.position[1] + velocity[1])
+
+    def update_body(self, pre_dir):
+        '''docstring here'''
+        if pre_dir == "right":
+            previous_vel = (10,0)
+        elif pre_dir == "left":
+            previous_vel = (-10,0)
+        elif pre_dir == "up":
+            previous_vel = (0,-10)
+        elif pre_dir == "down":
+            previous_vel = (0,10)
+        self.position = (self.position[0] + previous_vel[0], self.position[1] + previous_vel[1])
+
     def move_left(self):
         '''docstring here'''
         if self.direction != "right":
+            self.pre_direction = self.direction
             self.direction = "left"
-            self.velocity = (-5, 0)
 
     def move_right(self):
         '''docstring here'''
         if self.direction != "left":
+            self.pre_direction = self.direction
             self.direction = "right"
-            self.velocity = (5, 0)
 
     def move_up(self):
         '''docstring here'''
         if self.direction != "down":
+            self.pre_direction = self.direction
             self.direction = "up"
-            self.velocity = (0, -5)
 
     def move_down(self):
         '''docstring here'''
         if self.direction != "up":
+            self.pre_direction = self.direction
             self.direction = "down"
-            self.velocity = (0, 5)
 
 def game_loop():
     '''docstring here'''
@@ -65,8 +95,8 @@ def game_loop():
     clock = pygame.time.Clock()
     running = True
     escape_to_main = False
-    dt = 0
-    snake = [Snake(400,400, True), Snake(400, 450, False)]
+    # dt = 0
+    snake = [Snake(400,400, True, "head"), Snake(400, 450, False, "shoulders")]
 
     game_over = False
 
@@ -94,20 +124,23 @@ def game_loop():
             elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
                 snake[0].move_right()
 
-        for i, piece in enumerate(snake):
-            if i == 0:
-                piece.update_head()
+        for i in range(len(snake)):
+            # print(snake[len(snake)-i-1].get_name())
+            if snake[len(snake)-i-1].is_head():
+                snake[len(snake)-i-1].update_head()
             else:
-                piece.update_body(snake[i-1].get_vel())
-            piece.draw(screen)
+                snake[len(snake)-i-1].update_body(snake[len(snake)-i-2].get_pre_dir())
+            snake[len(snake)-i-1].draw(screen)
 
         pygame.display.flip()
-        dt = clock.tick(60) / 1000
+        # dt = clock.tick(10)
+        clock.tick(10)
 
         if(escape_to_main or not running):
             running = False
             return(True)
     pygame.quit()
+    return(False)
 
 if __name__ == "__main__":
     game_loop()
