@@ -1,4 +1,5 @@
 # Classic Games Emulator
+This Classic Games Emulator was made to practice Python programming and improve my understanding of Git over the summer break from University. Looking to continue to expand it in the future!
 
 ## How to run
 
@@ -14,7 +15,7 @@ Main.py should then be run
 
 ## Aims of Project
 
-Use pygame to create graphics, and work to recreate basic games.
+Use pygame to create graphics, and work to recreate classic games.
 Work on game design principles, improve use of Git and Github - especially using meaningful commit messages
 
 ## Proposed Emulator features (Not yet complete)
