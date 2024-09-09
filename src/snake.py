@@ -2,27 +2,26 @@
 To be run within the classic games project or individually
 '''
 import pygame
-# import random
 
 class Snake(pygame.sprite.Sprite):
     '''Snake Class
     Each block has position and an indication of its movement
     '''
     def __init__(self, x, y, is_head, name):
-        '''x, y positions of top left corner of block
-        is_head: shows if the block is the head of the snake
+        '''x, y positions of top left corner of scale
+        is_head: shows if the scale is the head of the snake
+        direction: shows the current direction the scale is travelling in
         name: purely for testing
         '''
         super().__init__()
         self.position = (x,y)
-        self.direction = "left"
-        # self.pre_direction = "left"
         self.head = is_head
+        self.direction = "up"
         self.name = name
 
     def draw(self, surface):
         '''docstring here'''
-        pygame.draw.rect(surface, "green", (self.position[0], self.position[1], 20, 20))
+        pygame.draw.rect(surface, "green", (self.position[0], self.position[1], 40, 40))
 
     def get_name(self):
         '''docstring here'''
@@ -32,77 +31,42 @@ class Snake(pygame.sprite.Sprite):
         '''docstring here'''
         return self.direction
 
-    # def get_pre_dir(self):
-    #     '''docstring here'''
-    #     return self.pre_direction
-
     def is_head(self):
         '''docstring here'''
         return self.head
 
-    def update(self, dir):
-        if dir == "right":
-            velocity = (20,0)
-        elif dir == "left":
-            velocity = (-20,0)
-        elif dir == "up":
-            velocity = (0,-20)
-        elif dir == "down":
-            velocity = (0,20)
+    def update(self, direct):
+        '''Updates the position based on the direction given (direct)'''
+        if direct == "right":
+            velocity = (50,0)
+        elif direct == "left":
+            velocity = (-50,0)
+        elif direct == "up":
+            velocity = (0,-50)
+        elif direct == "down":
+            velocity = (0,50)
         else:
             print("broken")
         self.position = (self.position[0] + velocity[0], self.position[1] + velocity[1])
-        print(self.direction)
-
-    def update_head(self):
-        '''docstring here'''
-        if self.direction == "right":
-            velocity = (20,0)
-        elif self.direction == "left":
-            velocity = (-20,0)
-        elif self.direction == "up":
-            velocity = (0,-20)
-        elif self.direction == "down":
-            velocity = (0,20)
-        else:
-            print("broken")
-        self.position = (self.position[0] + velocity[0], self.position[1] + velocity[1])
-        print(self.direction)
-
-    # def update_body(self, pre_dir):
-    #     '''docstring here'''
-    #     if pre_dir == "right":
-    #         previous_vel = (20,0)
-    #     elif pre_dir == "left":
-    #         previous_vel = (-20,0)
-    #     elif pre_dir == "up":
-    #         previous_vel = (0,-20)
-    #     elif pre_dir == "down":
-    #         previous_vel = (0,20)
-    #     self.position = (self.position[0] + previous_vel[0], self.position[1] + previous_vel[1])
 
     def move_left(self):
         '''docstring here'''
         if self.direction != "right":
-            # self.pre_direction = self.direction
             self.direction = "left"
 
     def move_right(self):
         '''docstring here'''
         if self.direction != "left":
-            # self.pre_direction = self.direction
             self.direction = "right"
 
     def move_up(self):
         '''docstring here'''
         if self.direction != "down":
-            # self.pre_direction = self.direction
             self.direction = "up"
 
     def move_down(self):
         '''docstring here'''
         if self.direction != "up":
-            # self.pre_direction = self.direction
             self.direction = "down"
 
 def game_loop():
@@ -115,7 +79,7 @@ def game_loop():
     clock = pygame.time.Clock()
     running = True
     escape_to_main = False
-    snake = [Snake(400,400, True, "head")]
+    snake = [Snake(400,400, True, "head"), Snake(400,450, True, "shoulders"), Snake(400,500, True, "knees"), Snake(400,550, True, "toes")]
     current_directions = ["up"]
 
     game_over = False
@@ -137,25 +101,24 @@ def game_loop():
                 # Arrow key and awsd movement
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                        # snake[0].move_left()
+                        # current_directions.append("left")
+                        snake[0].move_left()
                     elif event.key == pygame.K_w or event.key == pygame.K_UP:
-                        # snake[0].move_up()
+                        # current_directions.append("up")
+                        snake[0].move_up()
                     elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
-                        # snake[0].move_down()
+                        # current_directions.append("down")
+                        snake[0].move_down()
                     elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                        # snake[0].move_right()
+                        # current_directions.append("right")
+                        snake[0].move_right()
 
         # Update the movement
-        for i in range(len(snake)):
-            snake[i].update(current_directions[i])
-            snake[i].draw(screen)
-            # if snake[len(snake)-i-1].is_head():
-            #     snake[len(snake)-i-1].update_head()
-            # else:
-            #     print("something something")
-                # snake[len(snake)-i-1].update_body(snake[len(snake)-i-2].get_pre_dir())
-            # snake[len(snake)-i-1].draw(screen)
-
+        current_directions.append(snake[0].get_direction())
+        for i, scale in enumerate(snake):
+            scale.update(current_directions[len(current_directions) - 1 - i])
+            scale.draw(screen)
+        print(current_directions)
         pygame.display.flip()
         clock.tick(4)
 
