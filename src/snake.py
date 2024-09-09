@@ -1,13 +1,14 @@
 '''Snake - incomplete
 To be run within the classic games project or individually
 '''
+import random
 import pygame
 
 class Snake(pygame.sprite.Sprite):
     '''Snake Class
     Each block has position and an indication of its movement
     '''
-    def __init__(self, x, y, is_head, name):
+    def __init__(self, x, y, is_head):
         '''x, y positions of top left corner of scale
         is_head: shows if the scale is the head of the snake
         direction: shows the current direction the scale is travelling in
@@ -17,7 +18,6 @@ class Snake(pygame.sprite.Sprite):
         self.position = (x,y)
         self.head = is_head
         self.direction = "up"
-        self.name = name
 
     def draw(self, surface):
         '''docstring here'''
@@ -26,6 +26,9 @@ class Snake(pygame.sprite.Sprite):
     def get_name(self):
         '''docstring here'''
         return self.name
+    
+    def get_position(self):
+        return self.position
 
     def get_direction(self):
         '''docstring here'''
@@ -45,8 +48,6 @@ class Snake(pygame.sprite.Sprite):
             velocity = (0,-50)
         elif direct == "down":
             velocity = (0,50)
-        else:
-            print("broken")
         self.position = (self.position[0] + velocity[0], self.position[1] + velocity[1])
 
     def move_left(self):
@@ -79,21 +80,20 @@ def game_loop():
     clock = pygame.time.Clock()
     running = True
     escape_to_main = False
-    snake = [Snake(400,400, True, "head"), Snake(400,450, True, "shoulders"), Snake(400,500, True, "knees"), Snake(400,550, True, "toes")]
+    snake = [Snake(400,400, True), Snake(400,450, False)]
     current_directions = ["up"]
-
+    food_rect = (random.randint(0, 1230), random.randint(0, 650), 40, 40)
     game_over = False
 
     while running:
         screen.fill("black")
-        # background_images = pygame.image.load("src/images/snake_background.png").convert()
-        # screen.blit(background_images, (0, 0))
 
         # Escape keys
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] or keys[pygame.K_ESCAPE]:
             escape_to_main = True
 
+        food_eaten = False
         if not game_over:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -112,16 +112,42 @@ def game_loop():
                     elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                         # current_directions.append("right")
                         snake[0].move_right()
+                    elif event.key == pygame.K_l:
+                        food_eaten = True
 
         # Update the movement
+        # Use some snazzy data structure here
         current_directions.append(snake[0].get_direction())
+
         for i, scale in enumerate(snake):
+            if scale.is_head():
+                # If it collides with food
+                head_rect = pygame.Rect((scale.get_position()), (40, 40))
+                if head_rect.colliderect(food_rect):
+                    food_eaten = True
             scale.update(current_directions[len(current_directions) - 1 - i])
             scale.draw(screen)
-        print(current_directions)
+
+        # Generate food
+        if food_eaten:
+            direct = current_directions[len(current_directions) - 1 - len(snake)]
+            velocity = (0,0)
+            if direct == "right":
+                velocity = (-50,0)
+            elif direct == "left":
+                velocity = (50,0)
+            elif direct == "up":
+                velocity = (0,50)
+            elif direct == "down":
+                velocity = (0,-50)
+            tail_pos = snake[len(snake)-1].get_position()
+            snake.append(Snake(tail_pos[0]+ velocity[0], tail_pos[1]+ velocity[1], False))
+            food_rect = (random.randint(0, 25)*50, random.randint(0, 13)*50, 40, 40)
+
+        pygame.draw.rect(screen, "red", (food_rect))
+
         pygame.display.flip()
         clock.tick(4)
-
         if(escape_to_main or not running):
             running = False
             return(True)
