@@ -17,21 +17,18 @@ class Snake(pygame.sprite.Sprite):
         super().__init__()
         self.position = (x,y)
         self.head = is_head
-        self.direction = "up"
+        self.direction = "up" # Only used by the head
 
     def draw(self, surface):
-        '''docstring here'''
+        '''Draw the scale onto the surface given'''
         pygame.draw.rect(surface, "green", (self.position[0], self.position[1], 40, 40))
 
-    def get_name(self):
-        '''docstring here'''
-        return self.name
-    
     def get_position(self):
+        '''Return top, left (x,y) position of the scale'''
         return self.position
 
     def get_direction(self):
-        '''docstring here'''
+        '''Get the direction the scale is going (only used for the head scale)'''
         return self.direction
 
     def is_head(self):
@@ -141,7 +138,7 @@ def game_loop():
             elif direct == "down":
                 velocity = (0,-50)
             tail_pos = snake[len(snake)-1].get_position()
-            snake.append(Snake(tail_pos[0]+ velocity[0], tail_pos[1]+ velocity[1], False))
+            snake.append(Snake(tail_pos[0] + velocity[0], tail_pos[1] + velocity[1], False))
             food_rect = (random.randint(0, 25)*50, random.randint(0, 13)*50, 40, 40)
 
         pygame.draw.rect(screen, "red", (food_rect))
