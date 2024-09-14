@@ -1,5 +1,10 @@
 '''Snake - incomplete
 To be run within the classic games project or individually
+
+Current Issues:
+- Snake Scales can be added most of the time, but often go wrong (about 1 in 5 times)
+- Sides not detected/no game over
+- No points system/high score/background like other games
 '''
 import random
 import pygame
@@ -32,7 +37,7 @@ class Snake(pygame.sprite.Sprite):
         return self.direction
 
     def is_head(self):
-        '''docstring here'''
+        '''Returns if this scale is the head of the snake'''
         return self.head
 
     def update(self, direct):
@@ -48,27 +53,31 @@ class Snake(pygame.sprite.Sprite):
         self.position = (self.position[0] + velocity[0], self.position[1] + velocity[1])
 
     def move_left(self):
-        '''docstring here'''
+        '''Changes the current direction of the scale to "left". 
+        Warning - does not change the actual position, update must also be run'''
         if self.direction != "right":
             self.direction = "left"
 
     def move_right(self):
-        '''docstring here'''
+        '''Changes the current direction of the scale to "right". 
+        Warning - does not change the actual position, update must also be run'''
         if self.direction != "left":
             self.direction = "right"
 
     def move_up(self):
-        '''docstring here'''
+        '''Changes the current direction of the scale to "up". 
+        Warning - does not change the actual position, update must also be run'''
         if self.direction != "down":
             self.direction = "up"
 
     def move_down(self):
-        '''docstring here'''
+        '''Changes the current direction of the scale to "down". 
+        Warning - does not change the actual position, update must also be run'''
         if self.direction != "up":
             self.direction = "down"
 
 def game_loop():
-    '''docstring here'''
+    '''Main game loop'''
     screen_width = 1280
     screen_height = 700
     pygame.display.set_caption('Snake')
