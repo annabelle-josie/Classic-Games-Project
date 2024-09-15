@@ -1,11 +1,13 @@
 '''Snake - incomplete
 To be run within the classic games project or individually
-
-Current Issues:
-- Snake Scales can be added most of the time, but often go wrong (about 1 in 5 times)
-- Sides not detected/no game over
-- No points system/high score/background like other games
 '''
+
+# TODO: Snake Scales can be added most of the time, but often go wrong (about 1 in 5 times)
+# TODO: Sides badly detected
+# TODO: Game over not triggered for overlap
+# TODO: No points system/high score/background like other games
+# TODO: Deal with data issue
+
 import random
 import pygame
 
@@ -100,6 +102,7 @@ def game_loop():
             escape_to_main = True
 
         food_eaten = False
+
         if not game_over:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -121,37 +124,50 @@ def game_loop():
                     elif event.key == pygame.K_l:
                         food_eaten = True
 
-        # Update the movement
-        # Use some snazzy data structure here
-        current_directions.append(snake[0].get_direction())
+            # Update the movement
+            # Use some snazzy data structure here
+            current_directions.append(snake[0].get_direction())
 
-        for i, scale in enumerate(snake):
-            if scale.is_head():
-                # If it collides with food
-                head_rect = pygame.Rect((scale.get_position()), (40, 40))
-                if head_rect.colliderect(food_rect):
-                    food_eaten = True
-            scale.update(current_directions[len(current_directions) - 1 - i])
-            scale.draw(screen)
+            for i, scale in enumerate(snake):
+                if scale.is_head():
+                    # If it collides with food
+                    head_rect = pygame.Rect((scale.get_position()), (40, 40))
+                    if head_rect.colliderect(food_rect):
+                        food_eaten = True
+                    page_rect = pygame.Rect((0,0), (1280, 700))
+                    if (not head_rect.colliderect(page_rect)):
+                        print("snake escaped!")
+                        game_over = True
+                scale.update(current_directions[len(current_directions) - 1 - i])                
+                scale.draw(screen)
 
-        # Generate food
-        if food_eaten:
-            direct = current_directions[len(current_directions) - 1 - len(snake)]
-            velocity = (0,0)
-            if direct == "right":
-                velocity = (-50,0)
-            elif direct == "left":
-                velocity = (50,0)
-            elif direct == "up":
-                velocity = (0,50)
-            elif direct == "down":
-                velocity = (0,-50)
-            tail_pos = snake[len(snake)-1].get_position()
-            snake.append(Snake(tail_pos[0] + velocity[0], tail_pos[1] + velocity[1], False))
-            food_rect = (random.randint(0, 25)*50, random.randint(0, 13)*50, 40, 40)
+            # Generate food
+            if food_eaten:
+                direct = current_directions[len(current_directions) - 1 - len(snake)]
+                velocity = (0,0)
+                if direct == "right":
+                    velocity = (-50,0)
+                elif direct == "left":
+                    velocity = (50,0)
+                elif direct == "up":
+                    velocity = (0,50)
+                elif direct == "down":
+                    velocity = (0,-50)
+                tail_pos = snake[len(snake)-1].get_position()
+                snake.append(Snake(tail_pos[0] + velocity[0], tail_pos[1] + velocity[1], False))
+                food_rect = (random.randint(0, 25)*50, random.randint(0, 13)*50, 40, 40)
+            pygame.draw.rect(screen, "red", (food_rect))
 
-        pygame.draw.rect(screen, "red", (food_rect))
+            
+        else:
+            main_font = pygame.font.SysFont('Press_Start_2P', 100)
+            instrc_font = pygame.font.SysFont('Press_Start_2P', 25)
 
+            screen.fill("white")
+            text_surface = main_font.render('Game Over', False, "black")
+            screen.blit(text_surface, (200,275))
+            text_surface = instrc_font.render('Press R to restart', False, "black")
+            screen.blit(text_surface, (350,400))
         pygame.display.flip()
         clock.tick(4)
         if(escape_to_main or not running):

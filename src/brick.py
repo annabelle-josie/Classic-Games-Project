@@ -36,7 +36,6 @@ class Brick(pygame.sprite.Sprite):
         '''docstring here'''
         return self.position[0]
 
-
 class Puck(pygame.sprite.Sprite):
     '''docstring here'''
 
